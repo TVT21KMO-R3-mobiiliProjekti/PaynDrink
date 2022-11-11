@@ -28,11 +28,13 @@ CREATE TABLE item(
     quick_order INT,
     item_description VARCHAR(255),
     picture_url VARCHAR(255),
+    item_type INT,
     id_restaurant INT NOT NULL
 );
 CREATE TABLE seating(
     id_seating INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     seat_number INT,
+    seat_type INT,
     id_restaurant INT NOT NULL
 );
 CREATE TABLE seating_type(

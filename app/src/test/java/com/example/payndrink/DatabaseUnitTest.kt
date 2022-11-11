@@ -1,7 +1,7 @@
 package com.example.payndrink
 
 import com.example.payndrink.database.DatabaseAccess
-import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.*
 import org.junit.Test
 
 class DatabaseUnitTest {
@@ -16,8 +16,18 @@ class DatabaseUnitTest {
         val connection = dbAccess.connectToDatabase()
         val restaurantID = 1
         val restaurant = connection?.let { dbAccess.getRestaurant(it, restaurantID) }
-        if (restaurant != null) {
-            assertEquals(restaurantID, restaurant.id)
+        assertNotNull(restaurant!!.id)
+    }
+
+    @Test
+    fun getItemsTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val restaurantID = 1
+        val items = connection?.let { dbAccess.getItems(it, restaurantID) }
+        val itemCount = items?.size
+        if (itemCount != null) {
+            assertTrue(itemCount > 0)
         }
     }
 }
