@@ -3,4 +3,6 @@
     <string name="startButton">START HERE</string>
     <string name="appTitle">Pay\'n Drink</string>
     <string name="scanner_title">QR-Code Scanner</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
 </resources>
