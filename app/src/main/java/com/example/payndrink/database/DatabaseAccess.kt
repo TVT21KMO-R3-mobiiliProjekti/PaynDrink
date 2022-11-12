@@ -1,7 +1,9 @@
 package com.example.payndrink.database
 
+import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.SQLDataException
 import java.util.*
 
 //restaurant model class
@@ -98,4 +100,64 @@ class DatabaseAccess {
         }
         return items
     }
+
+    fun getFoodItems(connection: Connection, restaurantID: Int): MutableList<Item>{
+        val query = "SELECT * FROM item WHERE id_restaurant=$restaurantID AND item_type=1"
+        val result = connection.prepareStatement(query).executeQuery()
+        val items = mutableListOf<Item>()
+        while(result.next()){
+            val id = result.getInt("id_item")
+            val name = result.getString("item_name")
+            val quantity = result.getInt("quantity")
+            val price = result.getDouble("price")
+            val quick = result.getInt("quick_order")
+            val description = result.getString("item_description")
+            val pictureUrl = result.getString("picture_url")
+            val type = result.getInt("item_type")
+            items.add(Item(id, name, quantity, description, price, quick, pictureUrl, type,
+                restaurantID))
+        }
+        return items
+    }
+
+    fun getDrinks(connection: Connection, restaurantID: Int): MutableList<Item>{
+        val query = "SELECT * FROM item WHERE id_restaurant=$restaurantID AND item_type=2"
+        val result = connection.prepareStatement(query).executeQuery()
+        val items = mutableListOf<Item>()
+        while(result.next()){
+            val id = result.getInt("id_item")
+            val name = result.getString("item_name")
+            val quantity = result.getInt("quantity")
+            val price = result.getDouble("price")
+            val quick = result.getInt("quick_order")
+            val description = result.getString("item_description")
+            val pictureUrl = result.getString("picture_url")
+            val type = result.getInt("item_type")
+            items.add(Item(id, name, quantity, description, price, quick, pictureUrl, type,
+                restaurantID))
+        }
+        return items
+    }
+
+    fun createOrder(connection: Connection, restaurantID: Int, seatingID: Int): Int?{
+        var orderID: Int? = null
+        var query = "INSERT INTO orders(id_restaurant,id_seating) VALUES($restaurantID,$seatingID)" +
+                " RETURNING id_order"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            orderID = result.getInt("id_order")
+        }
+        return orderID
+    }
+
+    fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Boolean{
+        val query = "INSERT INTO order_has_item(quantity,id_order,id_item) VALUES($quantity,$orderID,$itemID)"
+        try {
+            connection.prepareStatement(query).executeUpdate()
+        }catch (e: SQLDataException){
+            return false
+        }
+        return true
+    }
+
 }

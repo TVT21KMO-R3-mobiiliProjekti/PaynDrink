@@ -78,7 +78,7 @@ CREATE TABLE tip(
 CREATE TABLE order_has_item(
     id_order_has_item INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     quantity INT,
-    id_order INT NOT NULL,
+    id_order INT,
     id_item INT NOT NULL
 );
 CREATE TABLE user_login(

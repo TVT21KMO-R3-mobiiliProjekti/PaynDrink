@@ -30,4 +30,47 @@ class DatabaseUnitTest {
             assertTrue(itemCount > 0)
         }
     }
+    @Test
+    fun getFoodTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val restaurantID = 1
+        val items = connection?.let { dbAccess.getFoodItems(it, restaurantID) }
+        val itemCount = items?.size
+        if (itemCount != null) {
+            assertTrue(itemCount > 0)
+        }
+    }
+
+    @Test
+    fun getDrinksTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val restaurantID = 1
+        val items = connection?.let { dbAccess.getDrinks(it, restaurantID) }
+        val itemCount = items?.size
+        if (itemCount != null) {
+            assertTrue(itemCount > 0)
+        }
+    }
+
+    @Test
+    fun addItemToOrderTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val itemID = 3
+        val quantity = 5
+        val orderID = 1;
+        connection?.let { dbAccess.addItemToOrder(it, quantity, itemID, orderID) }?.let { assertTrue(it) }
+    }
+
+    @Test
+    fun createOrderTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val restaurantID = 3
+        val seatingID = 5
+        assertNotNull(connection?.let { dbAccess.createOrder(it, restaurantID, seatingID) });
+    }
+
 }
