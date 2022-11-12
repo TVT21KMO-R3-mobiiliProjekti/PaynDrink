@@ -60,8 +60,9 @@ class DatabaseUnitTest {
         val connection = dbAccess.connectToDatabase()
         val itemID = 3
         val quantity = 5
-        val orderID = 1;
-        connection?.let { dbAccess.addItemToOrder(it, quantity, itemID, orderID) }?.let { assertTrue(it) }
+        val orderID = 1
+        val id: Int? = connection?.let { dbAccess.addItemToOrder(it, quantity, itemID, orderID) }
+        assertNotNull(id)
     }
 
     @Test
@@ -70,7 +71,43 @@ class DatabaseUnitTest {
         val connection = dbAccess.connectToDatabase()
         val restaurantID = 3
         val seatingID = 5
-        assertNotNull(connection?.let { dbAccess.createOrder(it, restaurantID, seatingID) });
+        assertNotNull(connection?.let { dbAccess.createOrder(it, restaurantID, seatingID) })
     }
 
+    @Test
+    fun getItemPriceTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val itemID = 2
+        val price = connection?.let { dbAccess.getItemPrice(it, itemID) }
+        assertNotNull(price)
+    }
+
+    @Test
+    fun getOrderPriceTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val orderID = 7
+        val price = connection?.let { dbAccess.getOrderPrice(it, orderID) }
+        if (price != null) {
+            assertTrue(price > 0)
+        }
+    }
+
+    @Test
+    fun sendOrderTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val orderID = 1
+        assertNotNull(connection?.let { dbAccess.sendOrder(it, orderID) })
+    }
+
+    @Test
+    fun getItemTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val id = 1
+        val item = connection?.let { dbAccess.getItem(it, id) }
+        assertNotNull(item)
+    }
 }

@@ -61,13 +61,13 @@ CREATE TABLE item_has_types(
 CREATE TABLE orders(
     id_order INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     order_price NUMERIC,
-    order_placed TIMESTAMP,
-    order_fullfilled TIMESTAMP,
+    order_placed BIGINT,
+    order_fullfilled BIGINT,
     refund NUMERIC,
     refund_reason VARCHAR(255),
     id_restaurant INT NOT NULL,
     id_seating INT NOT NULL,
-    id_server INT NOT NULL
+    id_server INT
 );
 CREATE TABLE tip(
     id_tip INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -78,6 +78,7 @@ CREATE TABLE tip(
 CREATE TABLE order_has_item(
     id_order_has_item INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     quantity INT,
+    delivered INT,
     id_order INT,
     id_item INT NOT NULL
 );

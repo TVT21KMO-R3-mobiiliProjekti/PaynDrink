@@ -4,6 +4,7 @@ import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLDataException
+import java.sql.Timestamp
 import java.util.*
 
 //restaurant model class
@@ -23,7 +24,7 @@ data class Waiter(val id: Int, val firstName: String?, val lastName: String?, va
                   val pictureUrl: String?, val restaurantID: Int)
 
 //order model class
-data class Order(val id: Int, val price: Double, val placed: Date, val fulfilled: Date,
+data class Order(val id: Int, val price: Double, val placed: Long, val fulfilled: Long,
                  val refund: Double?, val refundReason: String?, val restaurantID: Int,
                  val seatingID: Int, val waiterID: Int)
 
@@ -46,7 +47,7 @@ data class ItemHasTypes(val id: Int, val itemID: Int, val typeID: Int)
 data class SeatingHasItems(val id: Int, val seatingTypeID: Int, val itemTypeID: Int)
 
 //order has items model class
-data class OrderHasItems(val id: Int, val quantity: Int, val deliveredQuantity: Int?,
+data class OrderHasItems(val id: Int, val quantity: Int, val delivered: Int?,
                          val itemID: Int, val orderID: Int)
 
 class DatabaseAccess {
@@ -141,7 +142,7 @@ class DatabaseAccess {
 
     fun createOrder(connection: Connection, restaurantID: Int, seatingID: Int): Int?{
         var orderID: Int? = null
-        var query = "INSERT INTO orders(id_restaurant,id_seating) VALUES($restaurantID,$seatingID)" +
+        val query = "INSERT INTO orders(id_restaurant,id_seating) VALUES($restaurantID,$seatingID)" +
                 " RETURNING id_order"
         val result = connection.prepareStatement(query).executeQuery()
         while(result.next()){
@@ -150,14 +151,72 @@ class DatabaseAccess {
         return orderID
     }
 
-    fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Boolean{
-        val query = "INSERT INTO order_has_item(quantity,id_order,id_item) VALUES($quantity,$orderID,$itemID)"
-        try {
-            connection.prepareStatement(query).executeUpdate()
-        }catch (e: SQLDataException){
-            return false
+    fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Int?{
+        var id: Int? = null
+        val query = "INSERT INTO order_has_item(quantity,id_order,id_item) " +
+                "VALUES($quantity,$orderID,$itemID) RETURNING id_order_has_items"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            id = result.getInt("id_order")
         }
-        return true
+        return id
     }
 
+    fun getItemPrice(connection: Connection, itemID: Int): Double?{
+        var price: Double? = null
+        val query = "SELECT price FROM item WHERE id_item=$itemID"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            price = result.getDouble("price")
+        }
+        return price
+    }
+
+    fun getOrderPrice(connection: Connection, orderID: Int): Double {
+        val query = "SELECT * FROM order_has_item WHERE id_order=$orderID"
+        val result = connection.prepareStatement(query).executeQuery()
+        var orderPrice = 0.00
+        while(result.next()){
+            val id = result.getInt("id_item")
+            val price = getItemPrice(connection, id)
+            val quantity = result.getDouble("quantity")
+            if (price != null) {
+                orderPrice += price * quantity
+            }
+        }
+        return orderPrice
+    }
+
+    fun sendOrder(connection: Connection, orderID: Int): Int?{
+        var id: Int? = null
+        val orderTime = System.currentTimeMillis()
+        val price = getOrderPrice(connection, orderID)
+        val query = "UPDATE orders SET order_price=$price,order_placed=$orderTime " +
+                "WHERE id_order=$orderID RETURNING id_seating"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            id = result.getInt("id_seating")
+        }
+        return id
+    }
+
+    fun getItem(connection: Connection, itemID: Int): Item?{
+        var item: Item? = null
+        val query = "SELECT * FROM item WHERE id_item=$itemID"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            val id = result.getInt("id_item")
+            val name = result.getString("item_name")
+            val quantity = result.getInt("quantity")
+            val price = result.getDouble("price")
+            val quick = result.getInt("quick_order")
+            val description = result.getString("item_description")
+            val pictureUrl = result.getString("picture_url")
+            val type = result.getInt("item_type")
+            val restaurantID = result.getInt("id_restaurant")
+            item = Item(id, name, quantity, description, price, quick, pictureUrl, type,
+                restaurantID)
+        }
+        return item
+    }
 }
