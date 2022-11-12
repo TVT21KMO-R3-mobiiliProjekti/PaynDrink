@@ -35,7 +35,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-}
+
+    buildFeatures {
+            viewBinding = true
+        }
+    }
+
 
 dependencies {
 
@@ -48,4 +53,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    implementation 'com.google.android.material:material:1.2.0-alpha04'
 }
