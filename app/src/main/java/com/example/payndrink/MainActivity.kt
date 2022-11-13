@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import com.example.payndrink.database.Item
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -57,11 +58,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
-            //setUpGridView()
         }
 
         /** Button scan clicked -> Start scanner activity */
-        //Note! Hide button if there is items in grid
         val btnScanner = findViewById<Button>(R.id.btnScan)
         btnScanner.setOnClickListener {
             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
@@ -76,17 +75,28 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    /** Get result from activity **/
+    /** Get result from Scanner activity and launch restaurant activity **/
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        //TEST
-        //refreshItems()
 
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
-            val seatId = data?.getStringExtra("barcode")
+            val seatId : String? = data?.getStringExtra("barcode")
             if(seatId?.isNotEmpty() == true) {
-                //refreshItems()
-                Toast.makeText(this@MainActivity, seatId.toString(), Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, RestaurantActivity::class.java)
+                val dbAccess = DatabaseAccess()
+                val connection = dbAccess.connectToDatabase()
+                val restaurant = connection?.let { dbAccess.getRestaurantBySeating(it, seatId.toInt()) }
+                if(restaurant != null){
+                    startActivity(intent.apply {
+                        putExtra("id", restaurant.id)
+                        putExtra("seat", seatId.toInt())
+                        putExtra("name", restaurant.name)
+                        putExtra("address", restaurant.address)
+                        putExtra("description", restaurant.description)
+                        putExtra("picture", restaurant.pictureUrl)
+                        putExtra("type", restaurant.typeID)
+                    })
+                }
             }
             else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
         }
