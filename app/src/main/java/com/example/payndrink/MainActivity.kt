@@ -48,12 +48,6 @@ class MainActivity : AppCompatActivity() {
                     R.id.Item3 -> {
                         Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
                     }
-                    R.id.Item2 -> {
-                        Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
-                    }
-                    R.id.Item3 -> {
-                        Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
-                    }
                 }
                 true
             }
