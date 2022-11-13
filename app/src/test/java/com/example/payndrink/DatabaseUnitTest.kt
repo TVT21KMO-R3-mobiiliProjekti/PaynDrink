@@ -20,6 +20,15 @@ class DatabaseUnitTest {
     }
 
     @Test
+    fun getRestaurantBySeatingTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val seatingID = 1
+        val restaurant = connection?.let { dbAccess.getRestaurantBySeating(it, seatingID) }
+        assertNotNull(restaurant!!.id)
+    }
+
+    @Test
     fun getItemsTest(){
         val dbAccess = DatabaseAccess()
         val connection = dbAccess.connectToDatabase()

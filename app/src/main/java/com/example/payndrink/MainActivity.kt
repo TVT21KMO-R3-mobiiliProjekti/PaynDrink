@@ -11,8 +11,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
-import com.example.payndrink.database.DatabaseAccess
-import com.example.payndrink.database.DatabaseAdapter
 import com.example.payndrink.database.Item
 import com.example.payndrink.databinding.ActivityMainBinding
 
@@ -90,14 +88,14 @@ class MainActivity : AppCompatActivity() {
     /** Get result from activity **/
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         //TEST
-        refreshItems()
+        //refreshItems()
 
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val seatId = data?.getStringExtra("barcode")
             if(seatId?.isNotEmpty() == true) {
-                refreshItems()
-                //Toast.makeText(this@MainActivity, seatId.toString(), Toast.LENGTH_SHORT).show()
+                //refreshItems()
+                Toast.makeText(this@MainActivity, seatId.toString(), Toast.LENGTH_SHORT).show()
             }
             else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
         }
@@ -105,17 +103,5 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun refreshItems() {
-        val dba = DatabaseAdapter()
-        var test = dba.getItemsByRestaurant(1)
-        itemList = test
-    }
-
-
-
-
-
-
 
 }
