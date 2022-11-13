@@ -1,5 +1,6 @@
 package com.example.payndrink
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -28,13 +29,13 @@ class MainActivity : AppCompatActivity() {
                 navView.setNavigationItemSelectedListener {
                     when (it.itemId){
                         R.id.Item1 -> {
-                            Toast.makeText(this@MainActivity, "first Item clicked", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(applicationContext, ScannerActivity::class.java))
                         }
                         R.id.Item2 -> {
-                            Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(applicationContext, Menu::class.java))
                         }
                         R.id.Item3 -> {
-                            Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(applicationContext, ShoppingCart::class.java))
                         }
                     }
                     true
