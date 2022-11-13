@@ -1,11 +1,7 @@
 package com.example.payndrink.database
 
-import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.SQLDataException
-import java.sql.Timestamp
-import java.util.*
 
 //restaurant model class
 data class Restaurant(val id: Int?, val name: String?, val address: String?, val description: String?,
@@ -81,6 +77,20 @@ class DatabaseAccess {
             typeID = result.getInt("id_restaurant_type")
         }
         return Restaurant(id, name, address, description, pictureUrl, typeID)
+    }
+
+    fun getRestaurantBySeating(connection: Connection, seatingID: Int): Restaurant?{
+        val query = "SELECT id_restaurant FROM seating WHERE id_seating=$seatingID"
+        val result = connection.prepareStatement(query).executeQuery()
+        var id: Int? = null
+        while(result.next()){
+            id = result.getInt("id_restaurant")
+        }
+        return if(id != null){
+            getRestaurant(connection, id)
+        } else{
+            null
+        }
     }
 
     fun getItems(connection: Connection, restaurantID: Int): MutableList<Item>{
@@ -260,4 +270,5 @@ class DatabaseAccess {
         }
         return items
     }
+
 }
