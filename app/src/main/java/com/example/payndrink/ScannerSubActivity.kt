@@ -31,11 +31,11 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     /** Result received -> Return and pass data to requested activity */
     override fun handleResult(p0: Result?) {
-        val data = p0.toString()
+        var data = p0.toString()
         val intent = Intent()
 
         var result : Int = Activity.RESULT_OK
-        //if(!isNumeric(data) || data.length == 10) result = Activity.RESULT_CANCELED //Validate data - TESTAUKSEN AJAKSI OHITETTU
+        if(!isNumeric(data) || data.length != 13) data = "" //Validate data - TESTAUKSEN AJAKSI OHITETTU
         intent.putExtra("barcode", data)
         setResult(result, intent)
         finish()
@@ -54,7 +54,7 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         scannerView?.startCamera()
     }
 
-    /** On stop -> Stop camere */
+    /** On stop -> Stop camera */
     override fun onStop() {
         super.onStop()
         scannerView?.stopCamera()

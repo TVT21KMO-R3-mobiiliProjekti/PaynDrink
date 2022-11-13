@@ -1,5 +1,6 @@
 package com.example.payndrink.database
 
+import android.os.StrictMode
 import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
