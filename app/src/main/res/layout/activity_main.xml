@@ -15,26 +15,12 @@
             android:id="@+id/btnScan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:textSize="16sp"
+            android:layout_marginBottom="50dp"
             android:text="Scan"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <GridView
-            android:id="@+id/gridview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:horizontalSpacing="@dimen/padding_default"
-            android:numColumns="auto_fit"
-            android:padding="@dimen/padding_default"
-            android:verticalSpacing="@dimen/padding_default"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -53,5 +39,16 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_drawer_menu"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"/>
+        android:fitsSystemWindows="true">
+
+        <GridView
+            android:id="@+id/gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:horizontalSpacing="@dimen/padding_default"
+            android:numColumns="auto_fit"
+            android:padding="@dimen/padding_default"
+            android:verticalSpacing="@dimen/padding_default" />
+    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>
