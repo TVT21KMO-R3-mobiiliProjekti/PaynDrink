@@ -40,7 +40,7 @@ class RestaurantActivity : AppCompatActivity() {
         val items: MutableList<Item>? = connection?.let { restaurant?.id?.let { it1 -> dbAccess.getItems(it, it1) } }
         if (items != null) {
             for(item in items){
-                itemList = itemList + GridViewModal(item.name, item.pictureUrl, item.description)
+                itemList = itemList + GridViewModal(item.id, item.name, item.pictureUrl, item.description)
             }
         }
         val itemAdapter = GridRVAdapter(itemList = itemList,this@RestaurantActivity)

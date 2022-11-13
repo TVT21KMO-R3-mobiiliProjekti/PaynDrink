@@ -31,17 +31,10 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun handleResult(p0: Result?) {
         var data = p0.toString()
         val intent = Intent()
-
         var result : Int = Activity.RESULT_OK
-        if(!isNumeric(data)) data = "" //Validate data
         intent.putExtra("barcode", data)
         setResult(result, intent)
         finish()
-    }
-
-    /** Check is string numeric */
-    fun isNumeric(toCheck: String): Boolean {
-        return toCheck.all { char -> char.isDigit() }
     }
 
     /** On resume -> Start camera */

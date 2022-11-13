@@ -5,14 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.MenuItem
-import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
-import com.example.payndrink.database.Item
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.data.Utilities
 import com.example.payndrink.database.DatabaseAccess
+import com.example.payndrink.database.Item
 import com.example.payndrink.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -81,21 +81,27 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val seatId : String? = data?.getStringExtra("barcode")
-            if(seatId?.isNotEmpty() == true) {
+            val utilities = Utilities()
+            if(seatId?.let { utilities.isNumeric(it) } == true) {
                 val intent = Intent(this, RestaurantActivity::class.java)
                 val dbAccess = DatabaseAccess()
                 val connection = dbAccess.connectToDatabase()
-                val restaurant = connection?.let { dbAccess.getRestaurantBySeating(it, seatId.toInt()) }
+                val restaurant = connection?.let { seatId?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }
                 if(restaurant != null){
                     startActivity(intent.apply {
                         putExtra("id", restaurant.id)
-                        putExtra("seat", seatId.toInt())
+                        if (seatId != null) {
+                            putExtra("seat", seatId.toInt())
+                        }
                         putExtra("name", restaurant.name)
                         putExtra("address", restaurant.address)
                         putExtra("description", restaurant.description)
                         putExtra("picture", restaurant.pictureUrl)
                         putExtra("type", restaurant.typeID)
                     })
+                }
+                else{
+                    Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
                 }
             }
             else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
