@@ -33,7 +33,7 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         val intent = Intent()
 
         var result : Int = Activity.RESULT_OK
-        //if(!isNumeric(data) || data.length != 13) data = "" //Validate data - TESTAUKSEN AJAKSI OHITETTU
+        if(!isNumeric(data)) data = "" //Validate data
         intent.putExtra("barcode", data)
         setResult(result, intent)
         finish()

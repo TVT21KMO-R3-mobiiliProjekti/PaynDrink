@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    /** Get result from Scanner activity and launch restaurant activity **/
+    /** Get result from Scanner activity and launch restaurant activity**/
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
         if (result.resultCode == Activity.RESULT_OK) {
