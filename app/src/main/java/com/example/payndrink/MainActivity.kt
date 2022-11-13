@@ -27,20 +27,20 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.addDrawerListener(toggle)
             toggle.syncState()
 
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-                navView.setNavigationItemSelectedListener {
-                    when (it.itemId){
-                        R.id.Item1 -> {
-                            startActivity(Intent(applicationContext, ScannerActivity::class.java))
-                        }
-                        R.id.Item2 -> {
-                            startActivity(Intent(applicationContext, Menu::class.java))
-                        }
-                        R.id.Item3 -> {
-                            startActivity(Intent(applicationContext, ShoppingCart::class.java))
-                        }
-
+            navView.setNavigationItemSelectedListener {
+                when (it.itemId){
+                    R.id.itemQR -> {
+                        val intent = Intent(applicationContext, ScannerSubActivity::class.java)
+                        resultLauncher.launch(intent)
+                        if(drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START)
+                    }
+                    R.id.Item2 -> {
+                        Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.Item3 -> {
+                        Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
-          return true
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
