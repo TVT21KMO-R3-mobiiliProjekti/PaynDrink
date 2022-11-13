@@ -4,8 +4,9 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 //restaurant model class
-data class Restaurant(val id: Int?, val name: String?, val address: String?, val description: String?,
-                      val pictureUrl: String?, val typeID: Int?)
+data class Restaurant(
+    var id: Int?, var name: String?, var address: String?, var description: String?,
+    var pictureUrl: String?, var typeID: Int?)
 
 //item model class
 data class Item(val id: Int?, val name: String?, val quantity: Int?, val description: String?,

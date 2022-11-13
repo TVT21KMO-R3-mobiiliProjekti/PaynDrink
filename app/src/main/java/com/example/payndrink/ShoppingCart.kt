@@ -14,7 +14,7 @@ class ShoppingCart : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }*/
-        setContentView(R.layout.activity_scanner_sub)
+        //setContentView(R.layout.activity_scanner_sub)
 
     }
 
