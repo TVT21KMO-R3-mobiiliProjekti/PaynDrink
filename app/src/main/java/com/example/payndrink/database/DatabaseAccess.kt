@@ -1,11 +1,7 @@
 package com.example.payndrink.database
 
-import android.widget.Toast
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.SQLDataException
-import java.sql.Timestamp
-import java.util.*
 
 //restaurant model class
 data class Restaurant(val id: Int?, val name: String?, val address: String?, val description: String?,
@@ -83,6 +79,20 @@ class DatabaseAccess {
         return Restaurant(id, name, address, description, pictureUrl, typeID)
     }
 
+    fun getRestaurantBySeating(connection: Connection, seatingID: Int): Restaurant?{
+        val query = "SELECT id_restaurant FROM seating WHERE id_seating=$seatingID"
+        val result = connection.prepareStatement(query).executeQuery()
+        var id: Int? = null
+        while(result.next()){
+            id = result.getInt("id_restaurant")
+        }
+        return if(id != null){
+            getRestaurant(connection, id)
+        } else{
+            null
+        }
+    }
+
     fun getItems(connection: Connection, restaurantID: Int): MutableList<Item>{
         val query = "SELECT * FROM item WHERE id_restaurant=$restaurantID"
         val result = connection.prepareStatement(query).executeQuery()
@@ -157,6 +167,28 @@ class DatabaseAccess {
                 "VALUES($quantity,$orderID,$itemID) RETURNING id_order_has_items"
         val result = connection.prepareStatement(query).executeQuery()
         while(result.next()){
+            id = result.getInt("id_order_has_item")
+        }
+        return id
+    }
+
+    fun updateItemInOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Int?{
+        var id: Int? = null
+        val query = "UPDATE order_has_item SET quantity=$quantity WHERE id_order=$orderID AND id_item=$itemID " +
+                "RETURNING id_order_has_item"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
+            id = result.getInt("id_order_has_item")
+        }
+        return id
+    }
+
+    fun deleteItemInOrder(connection: Connection, orderItemID: Int): Int?{
+        var id: Int? = null
+        val query = "DELETE FROM order_has_item WHERE id_order_has_item=$orderItemID " +
+                "RETURNING id_order"
+        val result = connection.prepareStatement(query).executeQuery()
+        while(result.next()){
             id = result.getInt("id_order")
         }
         return id
@@ -219,4 +251,24 @@ class DatabaseAccess {
         }
         return item
     }
+
+    fun getQuickOrderItems(connection: Connection, restaurantID: Int): MutableList<Item>{
+        val query = "SELECT * FROM item WHERE id_restaurant=$restaurantID AND quick_order>0"
+        val result = connection.prepareStatement(query).executeQuery()
+        val items = mutableListOf<Item>()
+        while(result.next()){
+            val id = result.getInt("id_item")
+            val name = result.getString("item_name")
+            val quantity = result.getInt("quantity")
+            val price = result.getDouble("price")
+            val quick = result.getInt("quick_order")
+            val description = result.getString("item_description")
+            val pictureUrl = result.getString("picture_url")
+            val type = result.getInt("item_type")
+            items.add(Item(id, name, quantity, description, price, quick, pictureUrl, type,
+                restaurantID))
+        }
+        return items
+    }
+
 }

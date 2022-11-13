@@ -1,12 +1,15 @@
 package com.example.payndrink
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.drawerlayout.widget.DrawerLayout
+import androidx.core.view.GravityCompat
 import com.example.payndrink.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -37,12 +40,20 @@ class MainActivity : AppCompatActivity() {
                         R.id.Item3 -> {
                             startActivity(Intent(applicationContext, ShoppingCart::class.java))
                         }
+
                     }
-                    true
                 }
+                true
             }
         }
 
+        /** Start scanner activity */
+        val btnScanner = findViewById<Button>(R.id.btnScan)
+        btnScanner.setOnClickListener {
+            val intent = Intent(applicationContext, ScannerSubActivity::class.java)
+            resultLauncher.launch(intent)
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
@@ -50,4 +61,19 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    /** Get result from activity **/
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val str = data?.getStringExtra("barcode")
+            Toast.makeText(this@MainActivity, str.toString(), Toast.LENGTH_SHORT).show()
+        }
+        else if (result.resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
 }
