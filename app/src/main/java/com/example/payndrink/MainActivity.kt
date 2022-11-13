@@ -40,7 +40,12 @@ class MainActivity : AppCompatActivity() {
                         val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                         resultLauncher.launch(intent)
                         drawerLayout.closeDrawers()
-
+                    }
+                    R.id.Item2 -> {
+                        Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
+                    }
+                    R.id.Item3 -> {
+                        Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
                     }
                     R.id.Item2 -> {
                         Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
@@ -52,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
-            setUpGridView()
+            //setUpGridView()
         }
 
         /** Button scan clicked -> Start scanner activity */
@@ -66,23 +71,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
-          return true
+            return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun setUpGridView() {
-        val adapter = ImageListAdapter(this, R.layout.itemlist_item, itemList)
-        binding.gridview.adapter = adapter
-
-        binding.gridview.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, v, position, id ->
-                Toast.makeText(
-                    this@MainActivity, " Clicked Position: " + (position + 1),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
     }
 
     /** Get result from activity **/
