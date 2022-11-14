@@ -20,9 +20,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var binding: ActivityMainBinding
 
-    //Item Array
-    var itemList: MutableList<Item>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectNetwork().permitAll().penaltyLog().build()) //DEBUGGING
@@ -55,8 +52,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         /** Button scan clicked -> Start scanner activity */
-        val btnScanner = findViewById<Button>(R.id.btnScan)
-        btnScanner.setOnClickListener {
+        //val btnScanner = findViewById<Button>(R.id.btnScan)
+        binding.btnScan.setOnClickListener {
             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
             resultLauncher.launch(intent)
         }
