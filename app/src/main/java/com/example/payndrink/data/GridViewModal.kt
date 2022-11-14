@@ -4,5 +4,7 @@ data class GridViewModal(
     val id: Int?,
     val itemName: String?,
     val itemUrl: String?,
-    val itemDescription: String?
+    val itemDescription: String?,
+    val itemQuick: Int?,
+    val itemPrice: Double?
 )

@@ -12,23 +12,23 @@ import com.example.payndrink.data.GridViewModal
 import java.net.URL
 
 
-internal class GridRVAdapter (
-    private val itemList: List<GridViewModal>,
+internal class QuickGVAdapter (
+    private val quickList: List<GridViewModal>,
     private val context: Context
 
 ) :
     BaseAdapter() {
     private var layoutInflater: LayoutInflater? = null
     private lateinit var itemTV: TextView
-    private lateinit var itemIV: ImageView
     private lateinit var priceTV: TextView
+    private lateinit var itemIV: ImageView
 
     override fun getCount(): Int {
-        return itemList.size
+        return quickList.size
     }
 
     override fun getItem(position: Int): Any {
-        return itemList[position]
+        return quickList[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -46,10 +46,10 @@ internal class GridRVAdapter (
         itemIV = convertView!!.findViewById((R.id.icons))
         itemTV = convertView!!.findViewById(R.id.name_text_view)
         priceTV = convertView!!.findViewById(R.id.tv_price)
-        val bitmap = BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream())
+        val bitmap = BitmapFactory.decodeStream(URL(quickList[position].itemUrl).openConnection().getInputStream())
         itemIV.setImageBitmap(bitmap)
-        itemTV.text = itemList[position].itemName
-        priceTV.text = itemList[position].itemPrice.toString()
+        itemTV.text = quickList[position].itemName
+        priceTV.text = quickList[position].itemPrice.toString()
         return convertView
     }
 }
