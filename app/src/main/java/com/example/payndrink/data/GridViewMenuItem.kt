@@ -1,6 +1,6 @@
 package com.example.payndrink.data
 
-data class GridViewModal(
+data class GridViewMenuItem(
     val id: Int?,
     val itemName: String?,
     val itemUrl: String?,

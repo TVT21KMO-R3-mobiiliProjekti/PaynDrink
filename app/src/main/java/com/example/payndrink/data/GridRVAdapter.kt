@@ -1,4 +1,4 @@
-package com.example.payndrink
+package com.example.payndrink.data
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -8,27 +8,27 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.payndrink.data.GridViewModal
+import com.example.payndrink.R
 import java.net.URL
 
 
-internal class QuickGVAdapter (
-    private val quickList: List<GridViewModal>,
+internal class GridRVAdapter (
+    private val itemList: List<GridViewMenuItem>,
     private val context: Context
 
 ) :
     BaseAdapter() {
     private var layoutInflater: LayoutInflater? = null
     private lateinit var itemTV: TextView
-    private lateinit var priceTV: TextView
     private lateinit var itemIV: ImageView
+    private lateinit var priceTV: TextView
 
     override fun getCount(): Int {
-        return quickList.size
+        return itemList.size
     }
 
     override fun getItem(position: Int): Any {
-        return quickList[position]
+        return itemList[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -46,10 +46,10 @@ internal class QuickGVAdapter (
         itemIV = convertView!!.findViewById((R.id.icons))
         itemTV = convertView!!.findViewById(R.id.name_text_view)
         priceTV = convertView!!.findViewById(R.id.tv_price)
-        val bitmap = BitmapFactory.decodeStream(URL(quickList[position].itemUrl).openConnection().getInputStream())
+        val bitmap = BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream())
         itemIV.setImageBitmap(bitmap)
-        itemTV.text = quickList[position].itemName
-        priceTV.text = quickList[position].itemPrice.toString()
+        itemTV.text = itemList[position].itemName
+        priceTV.text = itemList[position].itemPrice.toString()
         return convertView
     }
 }
