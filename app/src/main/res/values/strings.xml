@@ -5,4 +5,6 @@
     <string name="scanner_title">QR-Code Scanner</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
+    <string name="scan_qr_code">Scan QR-Code</string>
+    <string name="main_background_image_desc">Background image</string>
 </resources>

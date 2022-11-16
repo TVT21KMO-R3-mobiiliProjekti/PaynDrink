@@ -3,11 +3,18 @@ package com.example.payndrink
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.*
+import android.app.Activity
+import android.content.Intent
+import android.widget.AdapterView
+import android.widget.GridView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.GridRVAdapter
 import com.example.payndrink.data.GridViewMenuItem
 import com.example.payndrink.data.QuickItemAdapter
+import com.example.payndrink.data.Utilities
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
@@ -64,10 +71,28 @@ class RestaurantActivity : AppCompatActivity() {
         }
         val itemAdapter = GridRVAdapter(itemList = itemList,this@RestaurantActivity)
         itemGRV.adapter = itemAdapter
+
         itemGRV.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            Toast.makeText(applicationContext, itemList[position].itemDescription,
-                Toast.LENGTH_SHORT).show()
+            //Launch MenuItemActivity
+            val intent = Intent(applicationContext, MenuItemActivity::class.java)
+            intent.apply {
+                putExtra("id", items?.get(position)?.id)
+                putExtra("name", items?.get(position)?.name)
+                putExtra("description", items?.get(position)?.description)
+                putExtra("pictureUrl", items?.get(position)?.pictureUrl)
+                putExtra("price", items?.get(position)?.price)
+            }
+            menuItemLauncher.launch(intent)
         }
+    }
+
+    private fun addRestaurantInfo(){
+        val util = Utilities()
+        val restaurantIv: ImageView = findViewById(R.id.iv_rest_pic)
+        val restaurantTv: TextView = findViewById(R.id.tv_rest_name)
+        restaurantIv.setImageBitmap(util.getImageBitmapFromURL(restaurant.pictureUrl))
+        restaurantTv.text = restaurant.name
+
         adapter = QuickItemAdapter(quickList)
         rv_quick_items.layoutManager = layoutManager
         rv_quick_items.setHasFixedSize(true)
@@ -78,14 +103,19 @@ class RestaurantActivity : AppCompatActivity() {
             }
 
         })
-
     }
-    private fun addRestaurantInfo(){
-        val bitmap = BitmapFactory.decodeStream(URL(restaurant.pictureUrl).openConnection().getInputStream())
-        val restaurantIv: ImageView = findViewById(R.id.iv_rest_pic)
-        val restaurantTv: TextView = findViewById(R.id.tv_rest_name)
-        restaurantIv.setImageBitmap(bitmap)
-        restaurantTv.text = restaurant.name
+
+    /** Get result from MenuItem activity **/
+    private var menuItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val itemID: Int? = data?.getIntExtra("id", -1)
+            val qty: Int? = data?.getIntExtra("qty", 0)
+            if (itemID ?: 0 >= 0) {
+                Toast.makeText(this@RestaurantActivity, "Add  id: " + itemID.toString() + "  qty: " + qty.toString(), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
 
