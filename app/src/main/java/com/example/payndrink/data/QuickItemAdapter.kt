@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.payndrink.R
-import kotlinx.android.synthetic.main.grid_item_list.view.*
+import kotlinx.android.synthetic.main.quick_item.view.*
 import java.net.URL
 
 class QuickItemAdapter (
@@ -31,7 +31,7 @@ class QuickItemAdapter (
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.grid_item_list, parent, false)
+            .inflate(R.layout.quick_item, parent, false)
         return ViewHolder(v, mListener)
     }
 
@@ -51,10 +51,10 @@ class QuickItemAdapter (
         itemView: View,
         listener: onItemClickListener
     ):RecyclerView.ViewHolder(itemView){
-        val tvName: TextView = itemView.name_text_view
-        val tvPrice: TextView = itemView.tv_price
-        val ivItem: ImageView = itemView.icons
-        val card: CardView = itemView.cv_menu_item
+        val tvName: TextView = itemView.tv_name_quick
+        val tvPrice: TextView = itemView.tv_price_quick
+        val ivItem: ImageView = itemView.icons_quick
+        val card: CardView = itemView.cv_quick_item
 
         init{
             itemView.setOnClickListener {

@@ -41,7 +41,7 @@ internal class GridRVAdapter (
             layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         }
         if(convertView == null){
-            convertView = layoutInflater!!.inflate(R.layout.grid_item_list, null)
+            convertView = layoutInflater!!.inflate(R.layout.grid_item, null)
         }
         itemIV = convertView!!.findViewById((R.id.icons))
         itemTV = convertView!!.findViewById(R.id.name_text_view)

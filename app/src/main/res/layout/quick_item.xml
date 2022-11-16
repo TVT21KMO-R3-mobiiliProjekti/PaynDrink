@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cv_menu_item"
-    android:layout_width="match_parent"
+    android:id="@+id/cv_quick_item"
+    android:layout_width="150dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_margin="5dp"
@@ -12,10 +12,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/lime">
 
         <ImageView
-            android:id="@+id/icons"
+            android:id="@+id/icons_quick"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
@@ -25,7 +26,7 @@
             android:src="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/name_text_view"
+            android:id="@+id/tv_name_quick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -36,7 +37,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_price"
+            android:id="@+id/tv_price_quick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
