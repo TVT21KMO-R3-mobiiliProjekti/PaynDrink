@@ -1,7 +1,6 @@
 package com.example.payndrink.data
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +8,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.payndrink.R
-import java.net.URL
-
 
 internal class GridRVAdapter (
     private val itemList: List<GridViewMenuItem>,
@@ -46,8 +43,8 @@ internal class GridRVAdapter (
         itemIV = convertView!!.findViewById((R.id.icons))
         itemTV = convertView!!.findViewById(R.id.name_text_view)
         priceTV = convertView!!.findViewById(R.id.tv_price)
-        val bitmap = BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream())
-        itemIV.setImageBitmap(bitmap)
+        //itemIV.setImageBitmap(BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream()))
+        itemIV.setImageBitmap(itemList[position].image)
         itemTV.text = itemList[position].itemName
         priceTV.text = itemList[position].itemPrice.toString()
         return convertView

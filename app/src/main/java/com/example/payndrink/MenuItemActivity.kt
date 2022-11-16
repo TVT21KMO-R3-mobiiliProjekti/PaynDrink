@@ -2,14 +2,10 @@ package com.example.payndrink
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.payndrink.data.Utilities
-import com.example.payndrink.database.Item
 import com.example.payndrink.databinding.ActivityMenuItemBinding
-import java.net.URL
 
 class MenuItemActivity : AppCompatActivity() {
 
@@ -27,8 +23,7 @@ class MenuItemActivity : AppCompatActivity() {
             binding.txtName.text = bundle.getString("name")
             binding.txtDescription.text = bundle.getString("description")
             binding.txtPrice.text = bundle.getDouble("price").toString().format(2) + "€"
-            val util = Utilities()
-            binding.imgItem.setImageBitmap(util.getImageBitmapFromURL(bundle.getString("pictureUrl")))
+            binding.imgItem.setImageBitmap(Utilities().getImageBitmapFromURL(bundle.getString("pictureUrl")))
         }
 
         binding.btnOrder.setOnClickListener {

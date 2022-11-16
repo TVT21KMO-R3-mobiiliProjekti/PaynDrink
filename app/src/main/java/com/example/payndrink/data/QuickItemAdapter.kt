@@ -1,6 +1,5 @@
 package com.example.payndrink.data
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.payndrink.R
 import kotlinx.android.synthetic.main.quick_item.view.*
-import java.net.URL
 
 class QuickItemAdapter (
     private val quickItemList: List<GridViewMenuItem>
@@ -38,8 +36,8 @@ class QuickItemAdapter (
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = quickItemList[position].itemName
         holder.tvPrice.text = quickItemList[position].itemPrice.toString()
-        holder.ivItem.setImageBitmap(BitmapFactory.decodeStream(URL(quickItemList[position].itemUrl)
-            .openConnection().getInputStream()))
+        //holder.ivItem.setImageBitmap(BitmapFactory.decodeStream(URL(quickItemList[position].itemUrl).openConnection().getInputStream()))
+        holder.ivItem.setImageBitmap(quickItemList[position].image)
         items.add(holder.card)
     }
     override fun getItemCount(): Int {

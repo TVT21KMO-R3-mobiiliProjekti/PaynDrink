@@ -1,6 +1,5 @@
 package com.example.payndrink
 
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.*
 import android.app.Activity
@@ -19,7 +18,6 @@ import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
 import kotlinx.android.synthetic.main.activity_menu.*
-import java.net.URL
 import java.sql.Connection
 
 class RestaurantActivity : AppCompatActivity() {
@@ -59,11 +57,11 @@ class RestaurantActivity : AppCompatActivity() {
     private fun addMenuItemsToGrid() {
         if (items != null) {
             for(item in items){
-                itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl,
+                itemList = itemList + GridViewMenuItem(item.id, item.name, Utilities().getImageBitmapFromURL(item.pictureUrl),
                     item.description, item.quick, item.price)
                 if(item.quick != null && item.quick > 0 && item.pictureUrl != null){
                     quickList += GridViewMenuItem(
-                        item.id, item.name, item.pictureUrl,
+                        item.id, item.name, Utilities().getImageBitmapFromURL(item.pictureUrl),
                         item.description, item.quick, item.price
                     )
                 }
@@ -87,10 +85,9 @@ class RestaurantActivity : AppCompatActivity() {
     }
 
     private fun addRestaurantInfo(){
-        val util = Utilities()
         val restaurantIv: ImageView = findViewById(R.id.iv_rest_pic)
         val restaurantTv: TextView = findViewById(R.id.tv_rest_name)
-        restaurantIv.setImageBitmap(util.getImageBitmapFromURL(restaurant.pictureUrl))
+        restaurantIv.setImageBitmap(Utilities().getImageBitmapFromURL(restaurant.pictureUrl))
         restaurantTv.text = restaurant.name
 
         adapter = QuickItemAdapter(quickList)

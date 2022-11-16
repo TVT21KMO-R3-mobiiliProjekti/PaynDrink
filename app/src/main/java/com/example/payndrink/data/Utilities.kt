@@ -2,8 +2,6 @@ package com.example.payndrink.data
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.view.WindowManager.BadTokenException
-import androidx.lifecycle.viewmodel.CreationExtras
 import java.net.URL
 
 class Utilities {
