@@ -60,11 +60,11 @@ class RestaurantActivity : AppCompatActivity() {
     private fun addMenuItemsToGrid() {
         if (items != null) {
             for(item in items){
-                itemList = itemList + GridViewMenuItem(item.id, item.name, Utilities().getImageBitmapFromURL(item.pictureUrl),
+                itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
                     item.description, item.quick, item.price)
                 if(item.quick != null && item.quick > 0 && item.pictureUrl != null){
                     quickList += GridViewMenuItem(
-                        item.id, item.name, Utilities().getImageBitmapFromURL(item.pictureUrl),
+                        item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
                         item.description, item.quick, item.price
                     )
                 }
@@ -83,12 +83,12 @@ class RestaurantActivity : AppCompatActivity() {
                     qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, items?.get(position)?.id!! )} ?: 0
                 }
                 if (qty < 1) qty = 1
-                putExtra("id", items?.get(position)?.id)
+                putExtra("id", itemList[position].id)
                 putExtra("qty", qty)
-                putExtra("name", items?.get(position)?.name)
-                putExtra("description", items?.get(position)?.description)
-                putExtra("pictureUrl", items?.get(position)?.pictureUrl)
-                putExtra("price", items?.get(position)?.price)
+                putExtra("name", itemList[position].itemName)
+                putExtra("description", itemList[position].itemDescription)
+                putExtra("pictureUrl", itemList[position].pictureUrl)
+                putExtra("price", itemList[position].itemPrice)
             }
             menuItemLauncher.launch(intent)
         }
@@ -109,7 +109,7 @@ class RestaurantActivity : AppCompatActivity() {
                 var qty : Int = 0
                 if (activeOrderID != null) {
                     //Get quantity from existing order
-                    qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, quickList?.get(position)?.id!! )} ?: 0
+                    qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, quickList[position].id!! )} ?: 0
                 }
                 qty += 1
                 addItemToOrder(quickList[position].id!!, qty, quickList[position].itemName!!)
@@ -120,14 +120,12 @@ class RestaurantActivity : AppCompatActivity() {
 
     /** Start activity and handle results **/
     private var menuItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val itemID: Int? = data?.getIntExtra("id", -1)
             val qty: Int? = data?.getIntExtra("qty", 0)
             val name: String? = data?.getStringExtra("name")
             if (itemID ?: 0 >= 0) {
-                val itemn = items[0]
                 addItemToOrder(itemID!!, qty!!, name!!)
             }
         }

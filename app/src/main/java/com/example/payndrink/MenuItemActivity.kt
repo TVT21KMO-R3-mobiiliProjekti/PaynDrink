@@ -56,7 +56,7 @@ class MenuItemActivity : AppCompatActivity() {
         }
 
         /** Edit qty text changed -> Validate user entry */
-        binding.edtQTY.doOnTextChanged { text, start, before, count ->
+        binding.edtQTY.doOnTextChanged { text, _, _, count ->
             if (count > 0) {
                 if(!Utilities().isNumeric(text.toString()) || text.toString().toInt() < 0 || text.toString().toInt() > MAX_QTY) {
                     quantity = 1

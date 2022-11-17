@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 data class GridViewMenuItem(
     val id: Int?,
     val itemName: String?,
-    //val itemUrl: String?,
+    val pictureUrl: String?,
     val image: Bitmap?,
     val itemDescription: String?,
     val itemQuick: Int?,
