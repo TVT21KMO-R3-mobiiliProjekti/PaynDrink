@@ -111,10 +111,12 @@ class RestaurantActivity : AppCompatActivity() {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, quickList[position].id!! )} ?: 0
                 }
-                qty += 1
-                addItemToOrder(quickList[position].id!!, qty, quickList[position].itemName!!)
+                if (qty < MAX_QTY) {
+                    qty += 1
+                    addItemToOrder(quickList[position].id!!, qty, quickList[position].itemName!!)
+                }
+                else Toast.makeText(this@RestaurantActivity, "Maximum quantity is $MAX_QTY", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
 
