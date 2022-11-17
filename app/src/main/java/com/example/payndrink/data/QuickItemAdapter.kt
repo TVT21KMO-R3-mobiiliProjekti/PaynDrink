@@ -34,7 +34,7 @@ class QuickItemAdapter (
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = quickItemList[position].itemName
-        holder.tvPrice.text = String.format("%.2f", quickItemList[position].itemPrice) + "€"
+        holder.tvPrice.text = String.format("%.2f %s", quickItemList[position].itemPrice, "€")
         //holder.ivItem.setImageBitmap(BitmapFactory.decodeStream(URL(quickItemList[position].itemUrl).openConnection().getInputStream()))
         holder.ivItem.setImageBitmap(quickItemList[position].image)
         items.add(holder.card)

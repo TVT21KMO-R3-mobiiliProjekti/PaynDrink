@@ -12,7 +12,6 @@ import com.example.payndrink.R
 internal class GridRVAdapter (
     private val itemList: List<GridViewMenuItem>,
     private val context: Context
-
 ) :
     BaseAdapter() {
     private var layoutInflater: LayoutInflater? = null
@@ -41,12 +40,12 @@ internal class GridRVAdapter (
             convertView = layoutInflater!!.inflate(R.layout.grid_item, null)
         }
         itemIV = convertView!!.findViewById((R.id.icons))
-        itemTV = convertView!!.findViewById(R.id.name_text_view)
-        priceTV = convertView!!.findViewById(R.id.tv_price)
+        itemTV = convertView.findViewById(R.id.name_text_view)
+        priceTV = convertView.findViewById(R.id.tv_price)
         //itemIV.setImageBitmap(BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream()))
         itemIV.setImageBitmap(itemList[position].image)
         itemTV.text = itemList[position].itemName
-        priceTV.text = String.format("%.2f", itemList[position].itemPrice) + "€"
+        priceTV.text = String.format("%.2f %s", itemList[position].itemPrice, "€")
         return convertView
     }
 }
