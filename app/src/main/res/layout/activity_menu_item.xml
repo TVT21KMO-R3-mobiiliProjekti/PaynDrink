@@ -14,7 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="-"
-        android:textSize="26dp"
+        android:paddingTop="10dp"
+        android:textStyle="bold"
+        android:textSize="24sp"
         android:layout_marginBottom="6dp"
     />
 
@@ -22,8 +24,8 @@
         android:id="@+id/txtDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12dp"
-        android:layout_marginBottom="26dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="10dp"
         android:text="-"
      />
 
@@ -46,29 +48,47 @@
         android:text="-"
         />
 
-    <TextView
-        android:id="@+id/txtQTY"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:text="Enter QTY:"
-        />
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:gravity="center">
 
-    <EditText
-        android:id="@+id/edtQTY"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number"
-        android:layout_marginBottom="26dp"
-        android:text="0" />
+        <Button
+            android:id="@+id/btnMinus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:text="-" />
+
+        <EditText
+            android:id="@+id/edtQTY"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="right"
+            android:inputType="number"
+            android:textSize="24dp"
+            android:minHeight="50dp"
+            android:selectAllOnFocus="true"
+            android:paddingRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:text="1" />
+        <Button
+            android:id="@+id/btnPlus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:text="+" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="ADD TO CART" />
+        android:text="UPDATE CART" />
 
     <Button
         android:id="@+id/btnCancel"

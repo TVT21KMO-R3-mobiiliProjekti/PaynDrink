@@ -46,7 +46,8 @@ internal class GridRVAdapter (
         //itemIV.setImageBitmap(BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream()))
         itemIV.setImageBitmap(itemList[position].image)
         itemTV.text = itemList[position].itemName
-        priceTV.text = itemList[position].itemPrice.toString()
+        val price = itemList[position].itemPrice
+        priceTV.text = String.format("%.2f", price) + "€"
         return convertView
     }
 }

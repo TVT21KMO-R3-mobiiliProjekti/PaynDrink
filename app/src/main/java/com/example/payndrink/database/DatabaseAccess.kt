@@ -2,6 +2,7 @@ package com.example.payndrink.database
 
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 
 //restaurant model class
 data class Restaurant(
@@ -165,7 +166,7 @@ class DatabaseAccess {
     fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Int?{
         var id: Int? = null
         val query = "INSERT INTO order_has_item(quantity,id_order,id_item) " +
-                "VALUES($quantity,$orderID,$itemID) RETURNING id_order_has_items"
+                "VALUES($quantity,$orderID,$itemID) RETURNING id_order_has_item"
         val result = connection.prepareStatement(query).executeQuery()
         while(result.next()){
             id = result.getInt("id_order_has_item")
@@ -218,6 +219,14 @@ class DatabaseAccess {
             }
         }
         return orderPrice
+    }
+
+    fun getOrderItemQty(connection: Connection, orderID: Int, itemID: Int): Int? {
+        var quantity : Int = 0
+        val query = "SELECT quantity FROM order_has_item WHERE id_order=$orderID and id_item=$itemID"
+        val result : ResultSet = connection.prepareStatement(query).executeQuery()
+        while (result.next()) quantity = result.getInt("quantity")
+        return quantity
     }
 
     fun sendOrder(connection: Connection, orderID: Int): Int?{

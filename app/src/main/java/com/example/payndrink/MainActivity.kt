@@ -52,7 +52,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         /** Button scan clicked -> Start scanner activity */
-        //val btnScanner = findViewById<Button>(R.id.btnScan)
         binding.btnScan.setOnClickListener {
             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
             resultLauncher.launch(intent)
