@@ -81,7 +81,7 @@ class DatabaseUnitTest {
         val connection = dbAccess.connectToDatabase()
         val itemID = 3
         val quantity = 5
-        val orderID = 1
+        val orderID = 6
         val id: Int? = connection?.let { dbAccess.addItemToOrder(it, quantity, itemID, orderID) }
         assertNotNull(id)
     }
