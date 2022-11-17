@@ -52,10 +52,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         /** Button scan clicked -> Start scanner activity */
-        //val btnScanner = findViewById<Button>(R.id.btnScan)
         binding.btnScan.setOnClickListener {
             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
             resultLauncher.launch(intent)
+        }
+
+        /** JUST For easier debugging */
+        binding.btnSkip.setOnClickListener {
+            val seatId : Int = 1
+            val intent = Intent(this, RestaurantActivity::class.java)
+            val dbAccess = DatabaseAccess()
+            val connection = dbAccess.connectToDatabase()
+            val restaurant = connection?.let { seatId?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }
+            if(restaurant != null){
+                startActivity(intent.apply {
+                    putExtra("id", restaurant.id)
+                    if (seatId != null) {
+                        putExtra("seat", seatId.toInt())
+                    }
+                    putExtra("name", restaurant.name)
+                    putExtra("address", restaurant.address)
+                    putExtra("description", restaurant.description)
+                    putExtra("picture", restaurant.pictureUrl)
+                    putExtra("type", restaurant.typeID)
+                })
+            }
         }
     }
 
