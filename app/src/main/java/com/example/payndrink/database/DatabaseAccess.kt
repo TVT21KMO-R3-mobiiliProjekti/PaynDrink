@@ -45,7 +45,7 @@ data class SeatingHasItems(val id: Int, val seatingTypeID: Int, val itemTypeID: 
 
 //order has items model class
 data class OrderHasItems(val id: Int, val quantity: Int, val delivered: Int?,
-                         val itemID: Int, val orderID: Int)
+                         val itemID: Int, val itemName: String?, val orderID: Int)
 
 class DatabaseAccess {
 
@@ -233,6 +233,7 @@ class DatabaseAccess {
         return id
     }
 
+
     fun getItem(connection: Connection, itemID: Int): Item?{
         var item: Item? = null
         val query = "SELECT * FROM item WHERE id_item=$itemID"
@@ -271,5 +272,27 @@ class DatabaseAccess {
         }
         return items
     }
-
+    fun getItemNameByID(connection: Connection, itemID: Int): String?{
+        val query = "SELECT item_name FROM item WHERE id_item=$itemID"
+        val result = connection.prepareStatement(query).executeQuery()
+        var name: String? = null
+        while(result.next()){
+            name = result.getString("item_name")
+        }
+        return name;
+    }
+    fun getItemsInOrder(connection: Connection, orderID: Int): MutableList<OrderHasItems>{
+        val query = "SELECT * FROM  WHERE id_order=$orderID"
+        val result = connection.prepareStatement(query).executeQuery()
+        val items = mutableListOf<OrderHasItems>()
+        while(result.next()){
+            val id = result.getInt("id_order_has_items")
+            val quantity = result.getInt("quantity")
+            val delivered = result.getInt("delivered")
+            val itemID = result.getInt("id_item")
+            val itemName = getItemNameByID(connection, itemID)
+            items.add(OrderHasItems(id, quantity, delivered, itemID, itemName, orderID))
+        }
+        return items
+    }
 }
