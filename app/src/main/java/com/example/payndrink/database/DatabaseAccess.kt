@@ -22,9 +22,9 @@ data class Waiter(val id: Int, val firstName: String?, val lastName: String?, va
                   val pictureUrl: String?, val restaurantID: Int)
 
 //order model class
-data class Order(val id: Int, val price: Double, val placed: Long, val fulfilled: Long,
+data class Order(val id: Int, val price: Double, val placed: Long?, val fulfilled: Long?,
                  val refund: Double?, val refundReason: String?, val restaurantID: Int,
-                 val seatingID: Int, val waiterID: Int)
+                 val seatingID: Int, val waiterID: Int?)
 
 //tip model class
 data class Tip(val id: Int, val amount: Double?, val orderID: Int, val waiterID: Int)
