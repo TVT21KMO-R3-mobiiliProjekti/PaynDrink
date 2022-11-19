@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
                         drawerLayout.closeDrawers()
                     }
                     R.id.Item2 -> {
+
                         Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
                     }
                     R.id.Item3 -> {
@@ -59,24 +61,8 @@ class MainActivity : AppCompatActivity() {
 
         /** JUST For easier debugging */
         binding.btnSkip.setOnClickListener {
-            val seatId : Int = 1
             val intent = Intent(this, RestaurantActivity::class.java)
-            val dbAccess = DatabaseAccess()
-            val connection = dbAccess.connectToDatabase()
-            val restaurant = connection?.let { seatId?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }
-            if(restaurant != null){
-                startActivity(intent.apply {
-                    putExtra("id", restaurant.id)
-                    if (seatId != null) {
-                        putExtra("seat", seatId.toInt())
-                    }
-                    putExtra("name", restaurant.name)
-                    putExtra("address", restaurant.address)
-                    putExtra("description", restaurant.description)
-                    putExtra("picture", restaurant.pictureUrl)
-                    putExtra("type", restaurant.typeID)
-                })
-            }
+            startActivity(intent.apply { putExtra("seatID", 1) })
         }
     }
 
@@ -92,35 +78,16 @@ class MainActivity : AppCompatActivity() {
 
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
-            val seatId : String? = data?.getStringExtra("barcode")
+            val seatID: String? = data?.getStringExtra("barcode")
             val utilities = Utilities()
-            if(seatId?.let { utilities.isNumeric(it) } == true) {
+            if (seatID?.let { utilities.isNumeric(it) } == true) {
+                ActiveSeatID = seatID.toInt()
                 val intent = Intent(this, RestaurantActivity::class.java)
-                val dbAccess = DatabaseAccess()
-                val connection = dbAccess.connectToDatabase()
-                val restaurant = connection?.let { seatId?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }
-                if(restaurant != null){
-                    startActivity(intent.apply {
-                        putExtra("id", restaurant.id)
-                        if (seatId != null) {
-                            putExtra("seat", seatId.toInt())
-                        }
-                        putExtra("name", restaurant.name)
-                        putExtra("address", restaurant.address)
-                        putExtra("description", restaurant.description)
-                        putExtra("picture", restaurant.pictureUrl)
-                        putExtra("type", restaurant.typeID)
-                    })
-                }
-                else{
-                    Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
-                }
-            }
-            else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT).show()
-        }
-        else if (result.resultCode == Activity.RESULT_CANCELED) {
+                startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })    //Not really needed since ActiveSeatID is global
+            } else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
+                .show()
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(this@MainActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
     }
-
 }

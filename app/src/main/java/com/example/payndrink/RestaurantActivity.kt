@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.payndrink.data.Globals.Companion.ActiveOrderID
+import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.GridRVAdapter
 import com.example.payndrink.data.GridViewMenuItem
 import com.example.payndrink.data.QuickItemAdapter
@@ -26,8 +28,7 @@ class RestaurantActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
     private lateinit var restaurant: Restaurant
-    private var seat: Int? = null
-    private var activeOrderID : Int? = null
+    private var seatID: Int? = null
     lateinit var itemGRV: GridView
     lateinit var itemList: List<GridViewMenuItem>
     private lateinit var items: MutableList<Item>
@@ -44,22 +45,19 @@ class RestaurantActivity : AppCompatActivity() {
         quickList = ArrayList()
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-
         val bundle: Bundle? = intent.extras
-        if (bundle != null) {
-            restaurant = Restaurant(bundle.getInt("id"), bundle.getString("name"),
-                bundle.getString("address"), bundle.getString("description"),
-                bundle.getString("picture"), bundle.getInt("type"))
-            seat = bundle.getInt("seat")
-            items = connection?.let { restaurant.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
-            addRestaurantInfo()
-            addMenuItemsToGrid()
+        if (bundle != null) { seatID  = bundle.getInt("seatID", -1) }
+        restaurant = connection?.let { seatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }!!
+        if (restaurant != null) {
+            items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
         }
+        addRestaurantInfo()
+        addMenuItemsToGrid()
     }
 
     private fun addMenuItemsToGrid() {
         if (items != null) {
-            for(item in items){
+            for(item in items!!){
                 itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
                     item.description, item.quick, item.price)
                 if(item.quick != null && item.quick > 0 && item.pictureUrl != null){
@@ -78,9 +76,9 @@ class RestaurantActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
                 var qty : Int = 1
-                if (activeOrderID != null) {
+                if (ActiveOrderID != null) {
                     //Get quantity from existing order
-                    qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, items?.get(position)?.id!! )} ?: 0
+                    qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, items[position].id!! )} ?: 0
                 }
                 if (qty < 1) qty = 1
                 putExtra("id", itemList[position].id)
@@ -107,9 +105,9 @@ class RestaurantActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
                 var qty : Int = 0
-                if (activeOrderID != null) {
+                if (ActiveOrderID != null) {
                     //Get quantity from existing order
-                    qty = connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, quickList[position].id!! )} ?: 0
+                    qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, quickList[position].id!! )} ?: 0
                 }
                 if (qty < MAX_QTY) {
                     qty += 1
@@ -120,7 +118,7 @@ class RestaurantActivity : AppCompatActivity() {
         })
     }
 
-    /** Start activity and handle results **/
+    /** Start activity and handle menuItem activity results **/
     private var menuItemLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
@@ -133,32 +131,48 @@ class RestaurantActivity : AppCompatActivity() {
         }
     }
 
-    /** Add item to the order (create if needed) or update quantity if item already exists in order */
+    /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
-        if (activeOrderID == null) {
+        if (ActiveOrderID == null) {
+            if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            activeOrderID = connection?.let { dbAccess.createOrder(it, restaurant.id!! , seat!!) }
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant.id!! , seatID!!) }
         }
         else {
-            //Check is item already entered
-            if (connection?.let { dbAccess.getOrderItemQty(it, activeOrderID!!, itemID )} ?: 0 >= 1) {
-                // Update quantity
-                if (connection?.let {dbAccess.updateItemInOrder(it, qty, itemID, activeOrderID!!) } != null)
-                    Toast.makeText(this@RestaurantActivity, "$itemName quantity updated to $qty", Toast.LENGTH_SHORT).show()
-                else Toast.makeText(this@RestaurantActivity, "Updating '$itemName' quantity failed!", Toast.LENGTH_LONG).show()
-                return
+            //Check if item already exists in active order
+            if (connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, itemID )} ?: 0 >= 1) {
+                if (qty > 0) {
+                    // Update quantity
+                    if (connection?.let {dbAccess.updateItemInOrder(it, qty, itemID, ActiveOrderID!!) } != null)
+                        Toast.makeText(this@RestaurantActivity, "$itemName quantity updated to $qty", Toast.LENGTH_SHORT).show()
+                    else Toast.makeText(this@RestaurantActivity, "Updating '$itemName' quantity failed!", Toast.LENGTH_LONG).show()
+                    return
+                }
+                else {
+                    //Delete item (also order if its empty)
+                    val ret : Int = connection?.let {dbAccess.deleteItemInOrder(it, itemID, ActiveOrderID!!) }!!
+                    if ( ret != 0) {
+                        Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
+                        if (ret < 0) {
+                            ActiveOrderID = null
+                            Toast.makeText(this@RestaurantActivity, "Shopping cart is empty", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    else Toast.makeText(this@RestaurantActivity, "Deleting '$itemName' from shopping cart failed!", Toast.LENGTH_LONG).show()
+                }
             }
         }
 
-        if (activeOrderID == null) {
+        if (qty < 1) return    //Quantity is 0 -> No need to add new item
+        if (ActiveOrderID == null) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
         }
         else {
             //Add item to order
-            if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, activeOrderID!!) } != null)
-                Toast.makeText(this@RestaurantActivity, "$qty x $itemName added to the order", Toast.LENGTH_SHORT).show()
-            else Toast.makeText(this@RestaurantActivity, "Adding '$itemName' to order failed!", Toast.LENGTH_LONG).show()
+            if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID!!) } != null)
+                Toast.makeText(this@RestaurantActivity, "$qty x $itemName added to shopping cart", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(this@RestaurantActivity, "Adding '$itemName' to shopping cart failed!", Toast.LENGTH_LONG).show()
         }
     }
 }
