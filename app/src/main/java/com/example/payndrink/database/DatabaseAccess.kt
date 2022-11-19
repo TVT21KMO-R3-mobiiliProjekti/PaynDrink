@@ -291,7 +291,7 @@ class DatabaseAccess {
         return name;
     }
     fun getItemsInOrder(connection: Connection, orderID: Int): MutableList<OrderHasItems>{
-        val query = "SELECT * FROM  WHERE id_order=$orderID"
+        val query = "SELECT * FROM order_has_items WHERE id_order=$orderID"
         val result = connection.prepareStatement(query).executeQuery()
         val items = mutableListOf<OrderHasItems>()
         while(result.next()){
