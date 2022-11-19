@@ -34,17 +34,18 @@ class MainActivity : AppCompatActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId){
                     R.id.itemQR -> {
-                        drawerLayout.closeDrawers()
                         val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                         resultLauncher.launch(intent)
+                        drawerLayout.closeDrawers()
                     }
                     R.id.itemMenu -> {
-                        drawerLayout.closeDrawers()
+                        if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
                         if (ActiveSeatID != null) {
                             val intent = Intent(applicationContext, RestaurantActivity::class.java)
                             startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
                         }
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
+                        drawerLayout.closeDrawers()
                     }
                     R.id.itemChart -> {
                         Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
@@ -52,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 true
             }
-
         }
 
         /** Button scan clicked -> Start scanner activity */
@@ -61,12 +61,6 @@ class MainActivity : AppCompatActivity() {
             resultLauncher.launch(intent)
         }
 
-        /** JUST For easier debugging */
-        binding.btnSkip.setOnClickListener {
-            ActiveSeatID = 1
-            val intent = Intent(applicationContext, RestaurantActivity::class.java)
-            startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

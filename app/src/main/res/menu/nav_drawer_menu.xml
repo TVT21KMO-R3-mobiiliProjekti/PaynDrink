@@ -3,7 +3,8 @@
 
         <item
             android:id="@+id/itemQR"
-            android:title="Scan QR code"/>
+            android:icon="@drawable/ic_baseline_qr_code_scanner_24"
+            android:title="Scan QR code" />
         <item
             android:id="@+id/itemMenu"
             android:title="Menu"/>

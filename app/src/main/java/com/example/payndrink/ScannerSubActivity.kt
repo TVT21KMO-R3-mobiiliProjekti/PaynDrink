@@ -19,6 +19,7 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         super.onCreate(savedInstanceState)
         scannerView = ZXingScannerView(this)
         setContentView(scannerView)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         // Check permissions
         val permission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
