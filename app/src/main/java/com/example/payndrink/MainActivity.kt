@@ -5,21 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
-import com.example.payndrink.database.DatabaseAccess
-import com.example.payndrink.database.Item
+
 import com.example.payndrink.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var toggle: ActionBarDrawerToggle
-    lateinit var binding: ActivityMainBinding
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +34,19 @@ class MainActivity : AppCompatActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId){
                     R.id.itemQR -> {
+                        drawerLayout.closeDrawers()
                         val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                         resultLauncher.launch(intent)
+                    }
+                    R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
+                        if (ActiveSeatID != null) {
+                            val intent = Intent(applicationContext, RestaurantActivity::class.java)
+                            startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
+                        }
+                        else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
-                    R.id.Item2 -> {
-
-                        Toast.makeText(this@MainActivity, "Second Item clicked", Toast.LENGTH_SHORT).show()
-                    }
-                    R.id.Item3 -> {
+                    R.id.itemChart -> {
                         Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -61,8 +63,9 @@ class MainActivity : AppCompatActivity() {
 
         /** JUST For easier debugging */
         binding.btnSkip.setOnClickListener {
-            val intent = Intent(this, RestaurantActivity::class.java)
-            startActivity(intent.apply { putExtra("seatID", 1) })
+            ActiveSeatID = 1
+            val intent = Intent(applicationContext, RestaurantActivity::class.java)
+            startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
         }
     }
 
@@ -82,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 ActiveSeatID = seatID.toInt()
-                val intent = Intent(this, RestaurantActivity::class.java)
+                val intent = Intent(applicationContext, RestaurantActivity::class.java)
                 startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })    //Not really needed since ActiveSeatID is global
             } else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +12,7 @@
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="-"
+        android:text=""
         android:paddingTop="10dp"
         android:textStyle="bold"
         android:textSize="24sp"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:layout_marginBottom="10dp"
-        android:text="-"
+        android:text=""
      />
 
     <ImageView
@@ -36,6 +35,7 @@
         android:layout_gravity="center"
         android:scaleType="fitCenter"
         android:layout_marginBottom="10dp"
+        android:contentDescription="@string/item_image"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
@@ -43,9 +43,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="24dp"
+        android:textSize="24sp"
         android:layout_marginBottom="26dp"
-        android:text="-"
+        android:text=""
         />
 
     <LinearLayout
@@ -59,27 +59,30 @@
             android:id="@+id/btnMinus"
             android:layout_width="55dp"
             android:layout_height="wrap_content"
-            android:text="-" />
+            android:text="" />
 
         <EditText
             android:id="@+id/edtQTY"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:gravity="right"
+            android:gravity="end"
             android:inputType="number"
-            android:textSize="24dp"
+            android:textSize="24sp"
             android:minHeight="50dp"
             android:selectAllOnFocus="true"
-            android:paddingRight="5dp"
+            android:paddingEnd="5dp"
+            android:paddingStart="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:text="1" />
+            android:hint="@string/enter_quantity"
+            android:autofillHints="phone"
+            android:text="@string/_1" />
         <Button
             android:id="@+id/btnPlus"
             android:layout_width="55dp"
             android:layout_height="wrap_content"
-            android:text="+" />
+            android:text="@string/plus" />
 
     </LinearLayout>
 
@@ -87,12 +90,11 @@
         android:id="@+id/btnOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:text="UPDATE CART" />
+        android:text="@string/button_add_cart" />
 
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cancel" />
+        android:text="@string/button_cancel" />
 </LinearLayout>

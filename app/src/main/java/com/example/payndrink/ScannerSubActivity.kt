@@ -29,9 +29,9 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     /** Result received -> Return and pass data to requested activity */
     override fun handleResult(p0: Result?) {
-        var data = p0.toString()
+        val data = p0.toString()
         val intent = Intent()
-        var result : Int = Activity.RESULT_OK
+        val result : Int = Activity.RESULT_OK
         intent.putExtra("barcode", data)
         setResult(result, intent)
         finish()

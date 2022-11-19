@@ -10,9 +10,9 @@ class Utilities {
         return toCheck.all { char -> char.isDigit() }
     }
 
-    /** Git imagebitmap from URL */
+    /** Get image bitmap from URL */
     fun getImageBitmapFromURL(url: String?): Bitmap? {
-        var bm : Bitmap? = try {
+        val bm : Bitmap? = try {
             BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
         } catch (e: Exception) {
             return null

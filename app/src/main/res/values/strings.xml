@@ -7,4 +7,10 @@
     <string name="closed">Closed</string>
     <string name="scan_qr_code">Scan QR-Code</string>
     <string name="main_background_image_desc">Background image</string>
+    <string name="item_image">Item image</string>
+    <string name="_1">1</string>
+    <string name="plus">+</string>
+    <string name="button_add_cart">UPDATE CART</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="enter_quantity">Enter quantity</string>
 </resources>

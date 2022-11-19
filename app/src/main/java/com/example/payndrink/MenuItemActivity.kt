@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextWatcher
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import com.example.payndrink.data.Utilities
@@ -25,7 +24,7 @@ class MenuItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         /** Get values from the calling activity */
-        var bundle: Bundle? = intent.extras
+        val bundle: Bundle? = intent.extras
         if (bundle != null) {
             itemID = bundle.getInt("id", -1)
             quantity = bundle.getInt("qty", 1)
@@ -69,7 +68,7 @@ class MenuItemActivity : AppCompatActivity() {
         /** Button Order clicked -> Finnish activity and send values to the calling activity */
         binding.btnOrder.setOnClickListener {
             val intent = Intent()
-            var result : Int = Activity.RESULT_OK
+            val result : Int = Activity.RESULT_OK
             intent.putExtra("id", itemID)
             intent.putExtra("qty", quantity)
             intent.putExtra("name", binding.txtName.text)

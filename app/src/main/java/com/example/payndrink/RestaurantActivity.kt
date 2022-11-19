@@ -3,17 +3,14 @@ package com.example.payndrink
 import android.os.Bundle
 import android.widget.*
 import android.app.Activity
-import android.content.ClipDescription
 import android.content.Intent
 import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
-import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.GridRVAdapter
 import com.example.payndrink.data.GridViewMenuItem
 import com.example.payndrink.data.QuickItemAdapter
@@ -27,10 +24,10 @@ import java.sql.Connection
 class RestaurantActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
-    private lateinit var restaurant: Restaurant
+    private var restaurant: Restaurant? = null
     private var seatID: Int? = null
-    lateinit var itemGRV: GridView
-    lateinit var itemList: List<GridViewMenuItem>
+    private lateinit var itemGRV: GridView
+    private lateinit var itemList: List<GridViewMenuItem>
     private lateinit var items: MutableList<Item>
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var quickList: MutableList<GridViewMenuItem>
@@ -47,7 +44,7 @@ class RestaurantActivity : AppCompatActivity() {
 
         val bundle: Bundle? = intent.extras
         if (bundle != null) { seatID  = bundle.getInt("seatID", -1) }
-        restaurant = connection?.let { seatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1.toInt()) } }!!
+        restaurant = connection?.let { seatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
         if (restaurant != null) {
             items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
         }
@@ -56,16 +53,14 @@ class RestaurantActivity : AppCompatActivity() {
     }
 
     private fun addMenuItemsToGrid() {
-        if (items != null) {
-            for(item in items!!){
-                itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
-                    item.description, item.quick, item.price)
-                if(item.quick != null && item.quick > 0 && item.pictureUrl != null){
-                    quickList += GridViewMenuItem(
-                        item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
-                        item.description, item.quick, item.price
-                    )
-                }
+        for(item in items){
+            itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
+                item.description, item.quick, item.price)
+            if(item.quick != null && item.quick > 0 && item.pictureUrl != null){
+                quickList += GridViewMenuItem(
+                    item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
+                    item.description, item.quick, item.price
+                )
             }
         }
         val itemAdapter = GridRVAdapter(itemList = itemList,this@RestaurantActivity)
@@ -75,7 +70,7 @@ class RestaurantActivity : AppCompatActivity() {
             //Launch MenuItemActivity
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
-                var qty : Int = 1
+                var qty = 1
                 if (ActiveOrderID != null) {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, items[position].id!! )} ?: 0
@@ -95,8 +90,8 @@ class RestaurantActivity : AppCompatActivity() {
     private fun addRestaurantInfo(){
         val restaurantIv: ImageView = findViewById(R.id.iv_rest_pic)
         val restaurantTv: TextView = findViewById(R.id.tv_rest_name)
-        restaurantIv.setImageBitmap(Utilities().getImageBitmapFromURL(restaurant.pictureUrl))
-        restaurantTv.text = restaurant.name
+        restaurantIv.setImageBitmap(Utilities().getImageBitmapFromURL(restaurant!!.pictureUrl))
+        restaurantTv.text = restaurant!!.name
 
         adapter = QuickItemAdapter(quickList)
         rv_quick_items.layoutManager = layoutManager
@@ -104,7 +99,7 @@ class RestaurantActivity : AppCompatActivity() {
         rv_quick_items.adapter = adapter
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
-                var qty : Int = 0
+                var qty = 0
                 if (ActiveOrderID != null) {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, quickList[position].id!! )} ?: 0
@@ -125,7 +120,7 @@ class RestaurantActivity : AppCompatActivity() {
             val itemID: Int? = data?.getIntExtra("id", -1)
             val qty: Int? = data?.getIntExtra("qty", 0)
             val name: String? = data?.getStringExtra("name")
-            if (itemID ?: 0 >= 0) {
+            if ((itemID ?: 0) >= 0) {
                 addItemToOrder(itemID!!, qty!!, name!!)
             }
         }
@@ -136,11 +131,11 @@ class RestaurantActivity : AppCompatActivity() {
         if (ActiveOrderID == null) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant.id!! , seatID!!) }
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , seatID!!) }
         }
         else {
             //Check if item already exists in active order
-            if (connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, itemID )} ?: 0 >= 1) {
+            if ((connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, itemID) } ?: 0) >= 1) {
                 if (qty > 0) {
                     // Update quantity
                     if (connection?.let {dbAccess.updateItemInOrder(it, qty, itemID, ActiveOrderID!!) } != null)
