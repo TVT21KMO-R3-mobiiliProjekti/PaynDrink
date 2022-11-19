@@ -163,6 +163,11 @@ class DatabaseAccess {
         return orderID
     }
 
+    fun deleteOrder(connection: Connection, orderID: Int): Int{
+        var query = "DELETE FROM orders WHERE id_order=$orderID "
+        return connection.prepareStatement(query).executeUpdate()
+    }
+
     fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Int?{
         var id: Int? = null
         val query = "INSERT INTO order_has_item(quantity,id_order,id_item) " +
@@ -185,15 +190,18 @@ class DatabaseAccess {
         return id
     }
 
-    fun deleteItemInOrder(connection: Connection, orderItemID: Int): Int?{
-        var id: Int? = null
-        val query = "DELETE FROM order_has_item WHERE id_order_has_item=$orderItemID " +
-                "RETURNING id_order"
-        val result = connection.prepareStatement(query).executeQuery()
-        while(result.next()){
-            id = result.getInt("id_order")
+    fun deleteItemInOrder(connection: Connection, itemID: Int, orderID: Int): Int{
+        var query = "DELETE FROM order_has_item WHERE id_order=$orderID AND id_item=$itemID "
+        var cnt : Int = connection.prepareStatement(query).executeUpdate()
+
+        //Delete order if it contains no items
+        query = "SELECT COUNT(*) as cnt FROM order_has_item WHERE id_order=$orderID"
+        var result = connection.prepareStatement(query).executeQuery()
+        result.next()
+        if (result.getInt("cnt") == 0) {
+            if (deleteOrder(connection, orderID) > 0) cnt = -1
         }
-        return id
+        return cnt
     }
 
     fun getItemPrice(connection: Connection, itemID: Int): Double?{

@@ -40,7 +40,7 @@ class MenuItemActivity : AppCompatActivity() {
 
         /** Button Minus clicked -> Decrease quantity */
         binding.btnMinus.setOnClickListener{
-            if (quantity > 1) {
+            if (quantity >= 1) {
                 quantity -= 1
                 edtQTY.setText("$quantity")
             }
@@ -60,7 +60,7 @@ class MenuItemActivity : AppCompatActivity() {
                 if(!Utilities().isNumeric(text.toString()) || text.toString().toInt() < 0 || text.toString().toInt() > MAX_QTY) {
                     quantity = 1
                     edtQTY.setText("$quantity")
-                    Toast.makeText(this@MenuItemActivity, "Please enter quantity between 1 and $MAX_QTY", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MenuItemActivity, "Please enter quantity between 0 and $MAX_QTY", Toast.LENGTH_SHORT).show()
                 }
                 else quantity = text.toString().toInt()
             }
@@ -80,11 +80,7 @@ class MenuItemActivity : AppCompatActivity() {
         /** Button Cancel clicked -> Finnish activity and send values to the calling activity */
         binding.btnCancel.setOnClickListener {
             val intent = Intent()
-            var result : Int = Activity.RESULT_CANCELED
-            intent.putExtra("id", itemID)
-            intent.putExtra("qty", 0)
-            intent.putExtra("name", binding.txtName.text)
-            setResult(result, intent)
+            setResult(Activity.RESULT_CANCELED, intent)
             finish()
         }
     }

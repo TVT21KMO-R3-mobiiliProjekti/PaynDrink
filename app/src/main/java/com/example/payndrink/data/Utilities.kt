@@ -12,12 +12,10 @@ class Utilities {
 
     /** Git imagebitmap from URL */
     fun getImageBitmapFromURL(url: String?): Bitmap? {
-        var bm : Bitmap?
-        try {
-            bm = BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
-        }
-        catch (e: Exception) {
-            bm = null
+        var bm : Bitmap? = try {
+            BitmapFactory.decodeStream(URL(url).openConnection().getInputStream())
+        } catch (e: Exception) {
+            return null
         }
         return bm
     }

@@ -147,8 +147,18 @@ class DatabaseUnitTest {
     fun deleteItemInOrderTest(){
         val dbAccess = DatabaseAccess()
         val connection = dbAccess.connectToDatabase()
-        val orderItemID = 1
-        val id: Int? = connection?.let { dbAccess.deleteItemInOrder(it, orderItemID) }
+        val orderID = 1
+        val itemID = 1
+        val id: Int? = connection?.let { dbAccess.deleteItemInOrder(it, orderID, itemID) }
         assertNotNull(id)
+    }
+
+    @Test
+    fun deleteOrderTest(){
+        val dbAccess = DatabaseAccess()
+        val connection = dbAccess.connectToDatabase()
+        val orderID = 34
+        val cnt: Int? = connection?.let { dbAccess.deleteOrder(it, orderID) }
+        assertNotNull(cnt)
     }
 }
