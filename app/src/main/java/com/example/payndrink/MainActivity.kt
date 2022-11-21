@@ -13,6 +13,7 @@ import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
 
 import com.example.payndrink.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,9 +35,9 @@ class MainActivity : AppCompatActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId){
                     R.id.itemQR -> {
+                        drawerLayout.closeDrawers()
                         val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                         resultLauncher.launch(intent)
-                        drawerLayout.closeDrawers()
                     }
                     R.id.itemMenu -> {
                         if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
@@ -45,7 +46,8 @@ class MainActivity : AppCompatActivity() {
                             startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
                         }
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
-                        drawerLayout.closeDrawers()
+
+                        //drawerLayout.closeDrawers()
                     }
                     R.id.itemChart -> {
                         Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
@@ -54,6 +56,8 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
+
+
 
         /** Button scan clicked -> Start scanner activity */
         binding.btnScan.setOnClickListener {

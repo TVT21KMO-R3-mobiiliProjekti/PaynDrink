@@ -76,7 +76,7 @@ class MenuItemActivity : AppCompatActivity() {
             finish()
         }
 
-        /** Button Cancel clicked -> Finnish activity and send values to the calling activity */
+        /** Button Cancel clicked -> Finish activity */
         binding.btnCancel.setOnClickListener {
             val intent = Intent()
             setResult(Activity.RESULT_CANCELED, intent)
