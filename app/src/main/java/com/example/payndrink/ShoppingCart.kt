@@ -1,22 +1,43 @@
 package com.example.payndrink
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.database.Item
 
-class ShoppingCart : AppCompatActivity() {
+class ShoppingCart
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+{fun addItem(item) {
+    val cart = ShoppingCart.getCart()
 
-        /** Skip to main activity
-        val btnSkip = findViewById<Button>(R.id.btnSkip)
-        btnSkip.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }*/
-        //setContentView(R.layout.activity_scanner_sub)
+    val targetItem = cart.singleOrNull { it.product.id == Item.product.id }
 
+    if (targetItem == null) {
+        Item.quantity++
+        cart.add(Item)
+    } else {
+
+        targetItem.quantity++
     }
-
+    ShoppingCart.saveCart(cart)
 
 }
+
+    fun removeItem(Item: Item, context: Context) {
+
+        val cart = ShoppingCart.getCart()
+
+
+        val targetItem = cart.singleOrNull { it.product.id == Item.product.id }
+
+        if (targetItem != null) {
+
+            if (targetItem.quantity > 0) {
+
+                Toast.makeText(context, ”Hienoa”, Toast.LENGTH_SHORT).show()
+                targetItem.quantity--
+            } else {
+                cart.remove(targetItem)
+            }
+
+        }
+
+
+    }
