@@ -40,14 +40,12 @@ class MainActivity : AppCompatActivity() {
                         resultLauncher.launch(intent)
                     }
                     R.id.itemMenu -> {
+                        drawerLayout.closeDrawers()
                         if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
                         if (ActiveSeatID != null) {
-                            val intent = Intent(applicationContext, RestaurantActivity::class.java)
-                            startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })
+                            startActivity(Intent(applicationContext, RestaurantActivity::class.java))
                         }
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
-
-                        //drawerLayout.closeDrawers()
                     }
                     R.id.itemChart -> {
                         Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
@@ -83,12 +81,12 @@ class MainActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 ActiveSeatID = seatID.toInt()
-                val intent = Intent(applicationContext, RestaurantActivity::class.java)
-                startActivity(intent.apply { putExtra("seatID", ActiveSeatID) })    //Not really needed since ActiveSeatID is global
+                startActivity(Intent(applicationContext, RestaurantActivity::class.java))
             } else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(this@MainActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
     }
+
 }

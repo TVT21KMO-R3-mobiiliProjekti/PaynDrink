@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import kotlin.math.log
 
 class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
@@ -64,5 +66,14 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 }
             }
         }
+    }
+
+    /** Handle navigate back button */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            setResult(Activity.RESULT_CANCELED, Intent())
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

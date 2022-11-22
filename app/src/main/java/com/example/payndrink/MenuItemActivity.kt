@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import com.example.payndrink.data.Utilities
@@ -22,6 +23,7 @@ class MenuItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         /** Get values from the calling activity */
         val bundle: Bundle? = intent.extras
@@ -78,9 +80,17 @@ class MenuItemActivity : AppCompatActivity() {
 
         /** Button Cancel clicked -> Finish activity */
         binding.btnCancel.setOnClickListener {
-            val intent = Intent()
-            setResult(Activity.RESULT_CANCELED, intent)
+            setResult(Activity.RESULT_CANCELED, Intent())
             finish()
         }
+    }
+
+    /** Handle navigate back button */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            setResult(Activity.RESULT_CANCELED, Intent())
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
