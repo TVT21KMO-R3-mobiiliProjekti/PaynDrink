@@ -12,5 +12,5 @@
     <string name="plus">+</string>
     <string name="button_add_cart">UPDATE CART</string>
     <string name="button_cancel">Cancel</string>
-    <string name="enter_quantity">Enter quantity</string>
+    <string name="enter_quantity">Qty</string>
 </resources>

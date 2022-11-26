@@ -4,28 +4,35 @@ import android.os.Bundle
 import android.widget.*
 import android.app.Activity
 import android.content.Intent
+import android.view.MenuItem
 import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.payndrink.data.*
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.GridRVAdapter
-import com.example.payndrink.data.GridViewMenuItem
-import com.example.payndrink.data.QuickItemAdapter
-import com.example.payndrink.data.Utilities
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
+import com.example.payndrink.databinding.ActivityMainBinding
+import com.example.payndrink.databinding.ActivityMenuBinding
+import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.activity_menu.*
 import java.sql.Connection
 
 class RestaurantActivity : AppCompatActivity() {
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityMenuBinding
+
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
     private var restaurant: Restaurant? = null
-    private var seatID: Int? = null
+    //private var seatID: Int? = null
     private lateinit var itemGRV: GridView
     private lateinit var itemList: List<GridViewMenuItem>
     private lateinit var items: MutableList<Item>
@@ -35,16 +42,40 @@ class RestaurantActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_menu)
+        binding = ActivityMenuBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.apply {
+            toggle = ActionBarDrawerToggle(this@RestaurantActivity, drawerLayout, R.string.open, R.string.closed)
+            drawerLayout.addDrawerListener(toggle)
+            toggle.syncState()
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            navView.menu.findItem(R.id.itemMenu).isVisible = false
+            navView.setNavigationItemSelectedListener {
+                when (it.itemId){
+                    R.id.itemQR -> {
+                        drawerLayout.closeDrawers()
+                        val intent = Intent(applicationContext, ScannerSubActivity::class.java)
+                        scannerLauncher.launch(intent)
+                    }
+                    R.id.itemChart -> {
+                        Toast.makeText(this@RestaurantActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
+            }
+        }
+
+        updateView()
+    }
+
+    private fun updateView() {
         connection = dbAccess.connectToDatabase()
-        itemGRV = findViewById(R.id.my_grid_view)
+        itemGRV = binding.myGridView //   findViewById(R.id.my_grid_view)
         itemList = ArrayList()
         quickList = ArrayList()
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        val bundle: Bundle? = intent.extras
-        if (bundle != null) { seatID  = bundle.getInt("seatID", -1) }
-        restaurant = connection?.let { seatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
+        restaurant = connection?.let { Globals.ActiveSeatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
         if (restaurant != null) {
             items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
         }
@@ -52,7 +83,10 @@ class RestaurantActivity : AppCompatActivity() {
         addMenuItemsToGrid()
     }
 
+
     private fun addMenuItemsToGrid() {
+        itemList = emptyList()
+        quickList.clear()
         for(item in items){
             itemList = itemList + GridViewMenuItem(item.id, item.name, item.pictureUrl, Utilities().getImageBitmapFromURL(item.pictureUrl),
                 item.description, item.quick, item.price)
@@ -88,8 +122,8 @@ class RestaurantActivity : AppCompatActivity() {
     }
 
     private fun addRestaurantInfo(){
-        val restaurantIv: ImageView = findViewById(R.id.iv_rest_pic)
-        val restaurantTv: TextView = findViewById(R.id.tv_rest_name)
+        val restaurantIv: ImageView =  binding.ivRestPic  //findViewById(R.id.iv_rest_pic)
+        val restaurantTv: TextView = binding.tvRestName   //findViewById(R.id.tv_rest_name)
         restaurantIv.setImageBitmap(Utilities().getImageBitmapFromURL(restaurant!!.pictureUrl))
         restaurantTv.text = restaurant!!.name
 
@@ -131,7 +165,7 @@ class RestaurantActivity : AppCompatActivity() {
         if (ActiveOrderID == null) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , seatID!!) }
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
         }
         else {
             //Check if item already exists in active order
@@ -168,6 +202,30 @@ class RestaurantActivity : AppCompatActivity() {
             if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID!!) } != null)
                 Toast.makeText(this@RestaurantActivity, "$qty x $itemName added to shopping cart", Toast.LENGTH_SHORT).show()
             else Toast.makeText(this@RestaurantActivity, "Adding '$itemName' to shopping cart failed!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(toggle.onOptionsItemSelected(item)){
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    /** Get result from Scanner activity and update view **/
+    private var scannerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val seatID: String? = data?.getStringExtra("barcode")
+            val utilities = Utilities()
+            if (seatID?.let { utilities.isNumeric(it) } == true) {
+                Globals.ActiveSeatID = seatID.toInt()
+                updateView()
+            } else Toast.makeText(this@RestaurantActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
+                .show()
+        } else if (result.resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(this@RestaurantActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
     }
 }
