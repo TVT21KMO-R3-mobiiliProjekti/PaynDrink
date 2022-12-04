@@ -9,9 +9,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
-
 import com.example.payndrink.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -48,7 +48,13 @@ class MainActivity : AppCompatActivity() {
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemChart -> {
-                        Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()
+                        if(ActiveOrderID == null){
+                            Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT)
+                        }
+                        else{
+                            startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
+                        }
+                        //Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true

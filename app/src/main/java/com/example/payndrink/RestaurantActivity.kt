@@ -1,20 +1,16 @@
 package com.example.payndrink
 
-import android.os.Bundle
-import android.widget.*
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.view.MenuItem
-import android.widget.AdapterView
-import android.widget.GridView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.*
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
-import com.example.payndrink.data.GridRVAdapter
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
@@ -55,7 +51,13 @@ class RestaurantActivity : AppCompatActivity() {
                         scannerLauncher.launch(intent)
                     }
                     R.id.itemChart -> {
-                        Toast.makeText(this@RestaurantActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
+                        if(ActiveOrderID == null){
+                            Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT)
+                        }
+                        else{
+                            startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
+                        }
+                        //Toast.makeText(this@RestaurantActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true

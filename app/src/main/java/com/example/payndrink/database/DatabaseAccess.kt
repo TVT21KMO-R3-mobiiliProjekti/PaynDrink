@@ -303,7 +303,7 @@ class DatabaseAccess {
         val result = connection.prepareStatement(query).executeQuery()
         val items = mutableListOf<OrderHasItems>()
         while(result.next()){
-            val id = result.getInt("id_order_has_items")
+            val id = result.getInt("id_order_has_item")
             val quantity = result.getInt("quantity")
             val delivered = result.getInt("delivered")
             val itemID = result.getInt("id_item")
