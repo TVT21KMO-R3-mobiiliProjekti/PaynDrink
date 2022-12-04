@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemChart -> {
-                        Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true

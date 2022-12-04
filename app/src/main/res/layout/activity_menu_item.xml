@@ -17,6 +17,7 @@
         android:textStyle="bold"
         android:textSize="24sp"
         android:layout_marginBottom="6dp"
+        android:textColor="@color/design_default_color_on_primary"
     />
 
     <TextView
@@ -59,7 +60,8 @@
             android:id="@+id/btnMinus"
             android:layout_width="55dp"
             android:layout_height="wrap_content"
-            android:text="-" />
+            android:text="-"
+            android:background="@drawable/rounded"/>
 
         <EditText
             android:id="@+id/edtQTY"
@@ -82,7 +84,8 @@
             android:id="@+id/btnPlus"
             android:layout_width="55dp"
             android:layout_height="wrap_content"
-            android:text="@string/plus" />
+            android:text="@string/plus"
+            android:background="@drawable/rounded"/>
 
     </LinearLayout>
 
@@ -90,11 +93,14 @@
         android:id="@+id/btnOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_add_cart" />
+        android:background="@drawable/rounded"
+        android:text="@string/button_add_cart"
+        android:layout_marginBottom="10dp"/>
 
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
         android:text="@string/button_cancel" />
 </LinearLayout>
