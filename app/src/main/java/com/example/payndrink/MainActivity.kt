@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemChart -> {
-                        Toast.makeText(this@MainActivity, "Third Item clicked", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(applicationContext, ShoppingcartActivity::class.java))
                     }
                 }
                 true

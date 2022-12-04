@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context=".MenuItemActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHOPPINGCART"
+        android:paddingTop="10dp"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:layout_marginBottom="6dp"
+        android:textColor="@color/purple_700"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_shoppingcart_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_light_background"
+        android:orientation="horizontal" />
+
+    <Button
+        android:id="@+id/btnPay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:text="PAY"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded"
+        android:text="@string/button_cancel" />
+</LinearLayout>
