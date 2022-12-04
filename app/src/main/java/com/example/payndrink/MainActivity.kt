@@ -13,7 +13,6 @@ import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
 
 import com.example.payndrink.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
+                        Thread.sleep(500)
                         if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
                         if (ActiveSeatID != null) {
                             startActivity(Intent(applicationContext, RestaurantActivity::class.java))

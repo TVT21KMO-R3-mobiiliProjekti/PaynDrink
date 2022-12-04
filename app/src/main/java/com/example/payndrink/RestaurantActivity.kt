@@ -18,10 +18,7 @@ import com.example.payndrink.data.GridRVAdapter
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
-import com.example.payndrink.databinding.ActivityMainBinding
 import com.example.payndrink.databinding.ActivityMenuBinding
-import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.activity_menu.*
 import java.sql.Connection
 
@@ -68,7 +65,7 @@ class RestaurantActivity : AppCompatActivity() {
         updateView()
     }
 
-    private fun updateView() {
+    fun updateView() {
         connection = dbAccess.connectToDatabase()
         itemGRV = binding.myGridView //   findViewById(R.id.my_grid_view)
         itemList = ArrayList()
@@ -196,7 +193,7 @@ class RestaurantActivity : AppCompatActivity() {
         if (ActiveOrderID == null) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
-        }
+        }git a
         else {
             //Add item to order
             if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID!!) } != null)
