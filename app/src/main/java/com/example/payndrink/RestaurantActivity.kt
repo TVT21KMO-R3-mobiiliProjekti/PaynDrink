@@ -193,7 +193,7 @@ class RestaurantActivity : AppCompatActivity() {
         if (ActiveOrderID == null) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
-        }git a
+        }
         else {
             //Add item to order
             if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID!!) } != null)
