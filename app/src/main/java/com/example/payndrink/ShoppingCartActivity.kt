@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.iterator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.ShoppingcartItem
@@ -15,7 +14,6 @@ import com.example.payndrink.data.ShoppingcartItemAdapter
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.OrderHasItems
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
-import kotlinx.android.synthetic.main.shoppingcart_grid_item.view.*
 import java.sql.Connection
 
 class ShoppingCartActivity : AppCompatActivity() {
@@ -27,7 +25,7 @@ class ShoppingCartActivity : AppCompatActivity() {
     private lateinit var adapter: ShoppingcartItemAdapter
     private lateinit var bUpdate: Button
     private lateinit var bPay: Button
-    private lateinit var bCancel: Button
+    private lateinit var bClear: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +33,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         bUpdate = findViewById(R.id.btnUpdate)
         bPay = findViewById(R.id.btnPay)
-        bCancel = findViewById(R.id.btnCancel)
+        bClear = findViewById(R.id.btnClear)
         updateView()
         bUpdate.setOnClickListener{
             updateOrder()
@@ -43,7 +41,8 @@ class ShoppingCartActivity : AppCompatActivity() {
         bPay.setOnClickListener{
             //TODO payment
         }
-        bCancel.setOnClickListener{
+        bClear.setOnClickListener{
+            deleteOrder()
             finish()
         }
     }
@@ -84,6 +83,20 @@ class ShoppingCartActivity : AppCompatActivity() {
         val totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
         bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
         Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now up to date", Toast.LENGTH_SHORT).show()
+    }
+
+    /** Delete all items from shopping cart */
+    private fun deleteOrder() {
+        var ret : Int = 0
+        //Delete items (will finally also delete order)
+        for (item in itemList) {
+            ret = connection?.let { dbAccess.deleteItemInOrder(it, item.id, ActiveOrderID!!) }!!
+        }
+        if (ret < 0) {
+            ActiveOrderID = null
+            Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now empty", Toast.LENGTH_SHORT).show()
+        }
+        else Toast.makeText(this@ShoppingCartActivity, "Clearing shopping cart failed!", Toast.LENGTH_LONG).show()
     }
 
     /** Handle navigate back button */

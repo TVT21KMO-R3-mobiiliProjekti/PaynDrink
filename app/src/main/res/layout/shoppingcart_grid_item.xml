@@ -15,23 +15,26 @@
 
         <TextView
             android:id="@+id/name_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:layout_margin="1dp"
-            android:gravity="center"
+            android:gravity="start"
             android:text="Kalja"
-            android:textAlignment="center"
+            android:paddingLeft="5dp"
+            android:textAlignment="textStart"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_price"
-            android:layout_width="wrap_content"
+            android:layout_width="65dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
+            android:gravity="end"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:text="Hinta"
-            android:textAlignment="center" />
+            android:textAlignment="textEnd" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,14 +47,14 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/rounded"
-                android:text="-" />
+                android:text="@string/minus" />
 
             <EditText
                 android:id="@+id/edtQTY"
-                android:layout_width="40dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
                 android:autofillHints="phone"
                 android:ems="10"
                 android:gravity="end"

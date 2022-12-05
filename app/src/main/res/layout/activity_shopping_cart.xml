@@ -52,21 +52,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/btnUpdate"
-        app:layout_constraintBottom_toTopOf="@+id/btnCancel"
+        app:layout_constraintBottom_toTopOf="@+id/btnClear"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/rounded"
         android:text="@string/pay"
         android:layout_marginBottom="10dp" />
 
-    <Button
-        android:id="@+id/btnCancel"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnClear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/btnPay"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/rounded"
-        android:text="@string/button_cancel" />
+        android:backgroundTint="@color/red"
+        app:cornerRadius="100dp"
+        android:text="@string/clear" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,25 +40,24 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
-                        Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
-                        Thread.sleep(500)
                         if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
                         if (ActiveSeatID != null) {
+                            Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
+                            Thread.sleep(500)
                             startActivity(Intent(applicationContext, RestaurantActivity::class.java))
                         }
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
-                        Thread.sleep(500)
                         if(ActiveOrderID == null){
                             Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
+                            Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
+                            Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
                         }
-                        //Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()
                     }
                 }
                 true
