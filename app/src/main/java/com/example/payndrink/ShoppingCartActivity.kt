@@ -39,7 +39,8 @@ class ShoppingCartActivity : AppCompatActivity() {
             updateOrder()
         }
         bPay.setOnClickListener{
-            //TODO payment
+            sendOrder()         //for demo
+            //TODO payment!
         }
         bClear.setOnClickListener{
             deleteOrder()
@@ -97,6 +98,14 @@ class ShoppingCartActivity : AppCompatActivity() {
             Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now empty", Toast.LENGTH_SHORT).show()
         }
         else Toast.makeText(this@ShoppingCartActivity, "Clearing shopping cart failed!", Toast.LENGTH_LONG).show()
+    }
+
+    private fun sendOrder() {
+        var ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
+        if (ret >= 0) {
+            Toast.makeText(this@ShoppingCartActivity, "Order sent (DEMO)", Toast.LENGTH_SHORT).show()
+        }
+        else Toast.makeText(this@ShoppingCartActivity, "Sending order failed!", Toast.LENGTH_LONG).show()
     }
 
     /** Handle navigate back button */
