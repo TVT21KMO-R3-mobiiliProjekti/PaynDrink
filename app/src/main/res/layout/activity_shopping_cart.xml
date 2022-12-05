@@ -11,20 +11,30 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SHOPPINGCART"
-        android:paddingTop="10dp"
-        android:textStyle="bold"
-        android:textSize="24sp"
         android:layout_marginBottom="6dp"
+        android:paddingTop="10dp"
+        android:text="SHOPPING CART"
         android:textColor="@color/purple_700"
-        />
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_shoppingcart_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
-        android:orientation="horizontal" />
+        android:orientation="horizontal">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/btnUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/rounded"
+        android:text="UPDATE CART" />
 
     <Button
         android:id="@+id/btnPay"
@@ -32,8 +42,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded"
         android:text="PAY"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/btnCancel"
@@ -41,4 +50,5 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded"
         android:text="@string/button_cancel" />
+
 </LinearLayout>

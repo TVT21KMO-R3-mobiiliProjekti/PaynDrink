@@ -48,8 +48,9 @@ class MainActivity : AppCompatActivity() {
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemChart -> {
+                        drawerLayout.closeDrawers()
                         if(ActiveOrderID == null){
-                            Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT)
+                            Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
