@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
+                        Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                         Thread.sleep(500)
                         if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
                         if (ActiveSeatID != null) {
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
+                        Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
+                        Thread.sleep(500)
                         if(ActiveOrderID == null){
                             Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }

@@ -13,4 +13,7 @@
     <string name="button_add_cart">UPDATE CART</string>
     <string name="button_cancel">Cancel</string>
     <string name="enter_quantity">Qty</string>
+    <string name="shopping_cart">SHOPPING CART</string>
+    <string name="update_cart">UPDATE CART</string>
+    <string name="pay">PAY</string>
 </resources>

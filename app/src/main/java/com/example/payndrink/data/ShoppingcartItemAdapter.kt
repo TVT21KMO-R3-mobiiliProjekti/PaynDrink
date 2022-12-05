@@ -7,7 +7,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.example.payndrink.MAX_QTY
 import com.example.payndrink.R
 import kotlinx.android.synthetic.main.shoppingcart_grid_item.view.*
 
@@ -34,6 +36,7 @@ class ShoppingcartItemAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        var rec : Boolean = false
         holder.tvName.text = shoppingcartItemList[position].itemName
         var price: Double? = shoppingcartItemList[position].itemQty?.let {
             shoppingcartItemList[position].itemPrice?.times(it)
@@ -41,18 +44,39 @@ class ShoppingcartItemAdapter (
         holder.tvPrice.text = String.format("%.2f %s", price, "€")
         holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())
         holder.bPlus.setOnClickListener{
-            shoppingcartItemList[position].itemQty = shoppingcartItemList[position].itemQty.plus(1)
-            holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())
-            price = price?.plus(shoppingcartItemList[position].itemPrice!!)
-            holder.tvPrice.text = String.format("%.2f %s", price, "€")
+            if(shoppingcartItemList[position].itemQty!! < MAX_QTY) {
+                shoppingcartItemList[position].itemQty =
+                    shoppingcartItemList[position].itemQty.plus(1)
+                rec = true
+                holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())
+                rec = false
+                price = price?.plus(shoppingcartItemList[position].itemPrice!!)
+                holder.tvPrice.text = String.format("%.2f %s", price, "€")
+            }
         }
         holder.bMinus.setOnClickListener{
             if(shoppingcartItemList[position].itemQty!! > 0) {
                 shoppingcartItemList[position].itemQty =
                     shoppingcartItemList[position].itemQty.minus(1)
+                rec = true
                 holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())
+                rec = false
                 price = price?.minus(shoppingcartItemList[position].itemPrice!!)
                 holder.tvPrice.text = String.format("%.2f %s", price, "€")
+            }
+        }
+        holder.tvQty.doOnTextChanged { text, _, _, count ->
+            if (!rec) {
+                if (count > 0 && Utilities().isNumeric(text.toString()) && text.toString().toInt() >= 0 && text.toString().toInt() <= MAX_QTY) {
+                    shoppingcartItemList[position].itemQty = text.toString().toInt()
+                    price = shoppingcartItemList[position].itemPrice?.times(text.toString().toInt())
+                    holder.tvPrice.text = String.format("%.2f %s", price, "€")
+                }
+                else {
+                    rec = true
+                    holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())     //not a valid value
+                    rec = false
+                }
             }
         }
         items.add(holder.card)

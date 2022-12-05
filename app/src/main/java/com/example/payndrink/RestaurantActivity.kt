@@ -52,6 +52,8 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
+                        Toast.makeText(this@RestaurantActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
+                        Thread.sleep(500)
                         if(ActiveOrderID == null){
                             Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }

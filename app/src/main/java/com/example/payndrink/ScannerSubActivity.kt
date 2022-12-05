@@ -11,7 +11,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
-import kotlin.math.log
 
 class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
