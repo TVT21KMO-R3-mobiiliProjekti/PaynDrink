@@ -1,8 +1,8 @@
 package com.example.payndrink.data
 
 data class ShoppingcartItem (
-    val id: Int?,
+    val id: Int,
     val itemName: String?,
-    val itemQty: Int?,
+    var itemQty: Int,
     val itemPrice: Double?
 )

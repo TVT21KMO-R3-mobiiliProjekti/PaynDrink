@@ -51,8 +51,9 @@ class RestaurantActivity : AppCompatActivity() {
                         scannerLauncher.launch(intent)
                     }
                     R.id.itemChart -> {
+                        drawerLayout.closeDrawers()
                         if(ActiveOrderID == null){
-                            Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT)
+                            Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
