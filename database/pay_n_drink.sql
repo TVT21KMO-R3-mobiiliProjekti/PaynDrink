@@ -62,12 +62,15 @@ CREATE TABLE orders(
     id_order INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     order_price NUMERIC,
     order_placed BIGINT,
+    order_accepted BIGINT,
+    order_rejected BIGINT,
+    expected_delivery BIGINT,
     order_fullfilled BIGINT,
     refund NUMERIC,
     refund_reason VARCHAR(255),
     id_restaurant INT NOT NULL,
     id_seating INT NOT NULL,
-    id_server INT
+    id_waiter INT
 );
 CREATE TABLE tip(
     id_tip INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

@@ -170,8 +170,8 @@ class DatabaseAccess {
 
     fun addItemToOrder(connection: Connection, quantity: Int, itemID: Int, orderID: Int): Int?{
         var id: Int? = null
-        val query = "INSERT INTO order_has_item(quantity,id_order,id_item) " +
-                "VALUES($quantity,$orderID,$itemID) RETURNING id_order_has_item"
+        val query = "INSERT INTO order_has_item(quantity,delivered,id_order,id_item) " +
+                "VALUES($quantity,0,$orderID,$itemID) RETURNING id_order_has_item"
         val result = connection.prepareStatement(query).executeQuery()
         while(result.next()){
             id = result.getInt("id_order_has_item")
@@ -249,7 +249,6 @@ class DatabaseAccess {
         }
         return id
     }
-
 
     fun getItem(connection: Connection, itemID: Int): Item?{
         var item: Item? = null
