@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
@@ -19,6 +20,7 @@ import java.sql.Connection
 class ShoppingCartActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
+    private var totalPrice: Double? = 0.0
     private lateinit var itemList: List<ShoppingcartItem>
     private lateinit var items: MutableList<OrderHasItems>
     private lateinit var layoutManager: LinearLayoutManager
@@ -39,8 +41,9 @@ class ShoppingCartActivity : AppCompatActivity() {
             updateOrder()
         }
         bPay.setOnClickListener{
-            sendOrder()         //for demo
-            //TODO payment!
+            val intent = Intent(applicationContext, PaymentActivity::class.java)
+            intent.putExtra("totalPrice", totalPrice)
+            paymentLauncher.launch(intent)
         }
         bClear.setOnClickListener{
             deleteOrder()
@@ -58,7 +61,7 @@ class ShoppingCartActivity : AppCompatActivity() {
             val price = connection?.let { dbAccess.getItemPrice(it, item.itemID) }
             itemList = itemList + ShoppingcartItem(item.itemID, item.itemName, item.quantity, price)
         }
-        val totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
+        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
         bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
         adapter = ShoppingcartItemAdapter(itemList)
         rv_shoppingcart_items.layoutManager = layoutManager
@@ -81,7 +84,7 @@ class ShoppingCartActivity : AppCompatActivity() {
             }
         }
         // Update total price to view
-        val totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
+        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
         bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
         Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now up to date", Toast.LENGTH_SHORT).show()
     }
@@ -100,12 +103,15 @@ class ShoppingCartActivity : AppCompatActivity() {
         else Toast.makeText(this@ShoppingCartActivity, "Clearing shopping cart failed!", Toast.LENGTH_LONG).show()
     }
 
-    private fun sendOrder() {
-        var ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
-        if (ret >= 0) {
-            Toast.makeText(this@ShoppingCartActivity, "Order sent (DEMO)", Toast.LENGTH_SHORT).show()
+    /** Start activity and handle payment activity results **/
+    private var paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Toast.makeText(this@ShoppingCartActivity, "Payment received OK!", Toast.LENGTH_LONG).show()
+            //TODO: Status polling
         }
-        else Toast.makeText(this@ShoppingCartActivity, "Sending order failed!", Toast.LENGTH_LONG).show()
+        else {
+            Toast.makeText(this@ShoppingCartActivity, "Payment failed or canceled!", Toast.LENGTH_LONG).show()
+        }
     }
 
     /** Handle navigate back button */
