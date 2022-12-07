@@ -66,6 +66,7 @@ CREATE TABLE orders(
     order_rejected BIGINT,
     expected_delivery BIGINT,
     order_fullfilled BIGINT,
+    reject_reason VARCHAR(255),
     refund NUMERIC,
     refund_reason VARCHAR(255),
     id_restaurant INT NOT NULL,
