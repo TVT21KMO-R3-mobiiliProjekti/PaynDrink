@@ -65,7 +65,7 @@ CREATE TABLE orders(
     order_accepted BIGINT,
     order_rejected BIGINT,
     expected_delivery BIGINT,
-    order_fullfilled BIGINT,
+    order_fulfilled BIGINT,
     reject_reason VARCHAR(255),
     refund NUMERIC,
     refund_reason VARCHAR(255),
@@ -83,6 +83,7 @@ CREATE TABLE order_has_item(
     id_order_has_item INT NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     quantity INT,
     delivered INT,
+    refunded INT,
     id_order INT,
     id_item INT NOT NULL
 );

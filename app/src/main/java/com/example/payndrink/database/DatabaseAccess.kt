@@ -45,7 +45,7 @@ data class ItemHasTypes(val id: Int, val itemID: Int, val typeID: Int)
 data class SeatingHasItems(val id: Int, val seatingTypeID: Int, val itemTypeID: Int)
 
 //order has items model class
-data class OrderHasItems(val id: Int, val quantity: Int, val delivered: Int?,
+data class OrderHasItems(val id: Int, val quantity: Int, val delivered: Int, val refunded: Int,
                          val itemID: Int, val itemName: String?, val orderID: Int)
 
 class DatabaseAccess {
@@ -196,7 +196,7 @@ class DatabaseAccess {
 
         //Delete order if it contains no items
         query = "SELECT COUNT(*) as cnt FROM order_has_item WHERE id_order=$orderID"
-        var result = connection.prepareStatement(query).executeQuery()
+        val result = connection.prepareStatement(query).executeQuery()
         result.next()
         if (result.getInt("cnt") == 0) {
             if (deleteOrder(connection, orderID) > 0) cnt = -1
@@ -230,7 +230,7 @@ class DatabaseAccess {
     }
 
     fun getOrderItemQty(connection: Connection, orderID: Int, itemID: Int): Int? {
-        var quantity : Int = 0
+        var quantity = 0
         val query = "SELECT quantity FROM order_has_item WHERE id_order=$orderID and id_item=$itemID"
         val result : ResultSet = connection.prepareStatement(query).executeQuery()
         while (result.next()) quantity = result.getInt("quantity")
@@ -288,7 +288,8 @@ class DatabaseAccess {
         }
         return items
     }
-    fun getItemNameByID(connection: Connection, itemID: Int): String?{
+
+    private fun getItemNameByID(connection: Connection, itemID: Int): String?{
         val query = "SELECT item_name FROM item WHERE id_item=$itemID"
         val result = connection.prepareStatement(query).executeQuery()
         var name: String? = null
@@ -297,6 +298,7 @@ class DatabaseAccess {
         }
         return name
     }
+
     fun getItemsInOrder(connection: Connection, orderID: Int): MutableList<OrderHasItems>{
         val query = "SELECT * FROM order_has_item WHERE id_order=$orderID"
         val result = connection.prepareStatement(query).executeQuery()
@@ -305,9 +307,10 @@ class DatabaseAccess {
             val id = result.getInt("id_order_has_item")
             val quantity = result.getInt("quantity")
             val delivered = result.getInt("delivered")
+            val refunded = result.getInt("refunded")
             val itemID = result.getInt("id_item")
             val itemName = getItemNameByID(connection, itemID)
-            items.add(OrderHasItems(id, quantity, delivered, itemID, itemName, orderID))
+            items.add(OrderHasItems(id, quantity, delivered, refunded, itemID, itemName, orderID))
         }
         return items
     }
