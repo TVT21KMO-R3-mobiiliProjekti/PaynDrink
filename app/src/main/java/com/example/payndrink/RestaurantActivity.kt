@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.*
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
+import com.example.payndrink.data.Globals.Companion.PendingOrderID
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
@@ -47,8 +48,11 @@ class RestaurantActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        val intent = Intent(applicationContext, ScannerSubActivity::class.java)
-                        scannerLauncher.launch(intent)
+                        if (ActiveOrderID == null) {
+                            val intent = Intent(applicationContext, ScannerSubActivity::class.java)
+                            scannerLauncher.launch(intent)
+                        }
+                        else Toast.makeText(this@RestaurantActivity, "You must complete or cancel your active order to scan again!", Toast.LENGTH_LONG).show()
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
@@ -59,6 +63,19 @@ class RestaurantActivity : AppCompatActivity() {
                             Toast.makeText(this@RestaurantActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
+                        }
+                    }
+                    R.id.itemStatus -> {
+                        drawerLayout.closeDrawers()
+                        if(PendingOrderID == null){
+                            Toast.makeText(this@RestaurantActivity, "No pending orders", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            Toast.makeText(
+                                this@RestaurantActivity,"Please wait a moment...", Toast.LENGTH_LONG
+                            ).show()
+                            Thread.sleep(500)
+                            startActivity(Intent(this@RestaurantActivity, StatusActivity::class.java))
                         }
                     }
                 }
@@ -163,6 +180,7 @@ class RestaurantActivity : AppCompatActivity() {
 
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
+        Globals.PaymentOK = false
         if (ActiveOrderID == null) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists

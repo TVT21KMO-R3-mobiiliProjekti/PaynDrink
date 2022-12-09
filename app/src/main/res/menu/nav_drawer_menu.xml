@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
         <item
             android:id="@+id/itemQR"
@@ -13,4 +14,8 @@
             android:id="@+id/itemChart"
             android:icon="@drawable/ic_baseline_shopping_cart_checkout_24"
             android:title="Shopping cart" />
+        <item
+            android:id="@+id/itemStatus"
+            android:icon="@drawable/ic_baseline_restaurant_24"
+            android:title="Order Status" />
 </menu>
