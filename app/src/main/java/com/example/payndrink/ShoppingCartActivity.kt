@@ -9,7 +9,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
+import com.example.payndrink.data.Globals.Companion.PaymentOK
 import com.example.payndrink.data.ShoppingcartItem
 import com.example.payndrink.data.ShoppingcartItemAdapter
 import com.example.payndrink.database.DatabaseAccess
@@ -40,10 +42,14 @@ class ShoppingCartActivity : AppCompatActivity() {
         bUpdate.setOnClickListener{
             updateOrder()
         }
+        if (PaymentOK) bPay.text = "Send Order"
         bPay.setOnClickListener{
-            val intent = Intent(applicationContext, PaymentActivity::class.java)
-            intent.putExtra("totalPrice", totalPrice)
-            paymentLauncher.launch(intent)
+            if (!PaymentOK) {
+                val intent = Intent(applicationContext, PaymentActivity::class.java)
+                intent.putExtra("totalPrice", totalPrice)
+                paymentLauncher.launch(intent)
+            }
+            else sendOrder()
         }
         bClear.setOnClickListener{
             deleteOrder()
@@ -106,12 +112,33 @@ class ShoppingCartActivity : AppCompatActivity() {
     /** Start activity and handle payment activity results **/
     private var paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this@ShoppingCartActivity, "Payment received OK!", Toast.LENGTH_LONG).show()
-            //TODO: Status polling
+            Toast.makeText(this@ShoppingCartActivity, "Payment OK, Sending order...", Toast.LENGTH_SHORT).show()
+            if (!sendOrder()) {
+                //Payment OK, but sending failed -> Next time button will allow to try order directly
+                PaymentOK = true
+                bPay.text = "Send Order"
+            }
         }
         else {
             Toast.makeText(this@ShoppingCartActivity, "Payment failed or canceled!", Toast.LENGTH_LONG).show()
         }
+    }
+
+    /** Set send order flag to DB, start status activity and finish this one */
+    private fun sendOrder(): Boolean {
+        val connection = dbAccess.connectToDatabase()
+        var ret : Int = connection?.let {dbAccess.sendOrder(it, Globals.ActiveOrderID!!) }!!
+        if (ret >= 0) {
+            Globals.PendingOrderID = ActiveOrderID
+            ActiveOrderID = null
+            Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
+            // Launch status polling
+            val intent = Intent(applicationContext, StatusActivity::class.java)
+            finish() //Kill this activity
+            startActivity(intent)
+        }
+        else Toast.makeText(this@ShoppingCartActivity, "Sending order failed!", Toast.LENGTH_LONG).show()
+        return ret >= 0
     }
 
     /** Handle navigate back button */

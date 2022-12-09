@@ -23,8 +23,9 @@ data class Waiter(val id: Int, val firstName: String?, val lastName: String?, va
 
 //order model class
 data class Order(val id: Int, val price: Double, val placed: Long?, val fulfilled: Long?,
-                 val refund: Double?, val refundReason: String?, val restaurantID: Int,
-                 val seatingID: Int, val waiterID: Int?)
+                 val accepted: Long?, val rejected: Long?, val rejectReason: String?,
+                 val refund: Double?, val refundReason: String?, val exceptedDelivery: Long?,
+                 val restaurantID: Int, val seatingID: Int, val waiterID: Int?)
 
 //tip model class
 data class Tip(val id: Int, val amount: Double?, val orderID: Int, val waiterID: Int)
@@ -300,7 +301,7 @@ class DatabaseAccess {
     }
 
     fun getItemsInOrder(connection: Connection, orderID: Int): MutableList<OrderHasItems>{
-        val query = "SELECT * FROM order_has_item WHERE id_order=$orderID"
+        var query = "SELECT * FROM order_has_item WHERE id_order=$orderID"
         val result = connection.prepareStatement(query).executeQuery()
         val items = mutableListOf<OrderHasItems>()
         while(result.next()){
@@ -314,4 +315,25 @@ class DatabaseAccess {
         }
         return items
     }
+
+    fun getPlacedOrder(connection: Connection, orderID: Int): Order?{
+        val query = "SELECT * from orders WHERE id_order=$orderID AND order_placed IS NOT NULL"
+        val result = connection.prepareStatement(query).executeQuery()
+        var order : Order? = null
+        while (result.next()) {
+            val price = result.getDouble("order_price")
+            val placed = result.getLong("order_placed")
+            val fulfilled = result.getLong("order_fulfilled")
+            val refund = result.getDouble("refund")
+            val refundReason = result.getString("refund_reason")
+            val accepted = result.getLong("order_accepted")
+            val rejected = result.getLong("order_rejected")
+            val rejectReason = result.getString("reject_reason")
+            val expectedDelivery = result.getLong ("expected_delivery")
+            val waiter = result.getInt("id_waiter")
+            order = Order(orderID, price, placed, fulfilled, accepted, rejected, rejectReason, refund, refundReason, expectedDelivery, -1, -1, waiter)
+        }
+        return order
+    }
+
 }
