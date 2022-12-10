@@ -1,6 +1,7 @@
 package com.example.payndrink
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
@@ -13,6 +14,7 @@ import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
+import com.example.payndrink.data.Globals.Companion.sharedPreferences
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMainBinding
 
@@ -24,12 +26,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityMainBinding
     private val globals = Globals()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectNetwork().permitAll().penaltyLog().build()) //DEBUGGING
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        globals.loadPreferences()
         binding.apply {
             toggle = ActionBarDrawerToggle(this@MainActivity, drawerLayout, R.string.open, R.string.closed)
             drawerLayout.addDrawerListener(toggle)
@@ -99,6 +101,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        sharedPreferences = this@MainActivity.getPreferences(Context.MODE_PRIVATE)
+        globals.loadPreferences()
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true

@@ -20,4 +20,5 @@
     <string name="minus">-</string>
     <string name="payment_demonstration">PAYMENT DEMONSTRATION</string>
     <string name="order_status">ORDER STATUS</string>
+    <string name="send_order">Send Order</string>
 </resources>

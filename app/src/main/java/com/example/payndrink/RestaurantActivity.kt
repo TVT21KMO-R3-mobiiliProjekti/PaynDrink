@@ -181,12 +181,10 @@ class RestaurantActivity : AppCompatActivity() {
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
         Globals.PaymentOK = false
-        globals.savePreferences()
         if (ActiveOrderID == null || ActiveOrderID == 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
             ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
-            globals.savePreferences()
         }
         else {
             //Check if item already exists in active order
@@ -213,7 +211,7 @@ class RestaurantActivity : AppCompatActivity() {
                 }
             }
         }
-
+        globals.savePreferences()
         if (qty < 1) return    //Quantity is 0 -> No need to add new item
         if (ActiveOrderID == null || ActiveOrderID == 0) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()

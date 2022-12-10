@@ -1,7 +1,6 @@
 package com.example.payndrink.data
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 
 class Globals : Application() {
@@ -10,11 +9,10 @@ class Globals : Application() {
         var ActiveOrderID : Int? = null
         var TrackedOrderIDs : MutableList<Int> = ArrayList()
         var PaymentOK : Boolean = false
+        lateinit var sharedPreferences: SharedPreferences
     }
-
     // Save active seat and order to preferences in phone memory
     fun savePreferences(){
-        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         ActiveSeatID?.let { editor.putInt("seat", it) }
         ActiveOrderID?.let { editor.putInt("order", it) }
@@ -31,14 +29,17 @@ class Globals : Application() {
 
     // Load active seat and order from preferences in phone memory
     fun loadPreferences(){
-        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
-        ActiveSeatID = sharedPreferences.getInt("seat", 0)
-        ActiveOrderID = sharedPreferences.getInt("order", 0)
-        val orders = sharedPreferences.getInt("orders", 0)
-        for(i in 1..orders){
-            val key = "order$i"
-            TrackedOrderIDs.add(sharedPreferences.getInt(key, 0))
+        try {
+            ActiveSeatID = sharedPreferences.getInt("seat", 0)
+            ActiveOrderID = sharedPreferences.getInt("order", 0)
+            val orders = sharedPreferences.getInt("orders", 0)
+            for (i in 1..orders) {
+                val key = "order$i"
+                TrackedOrderIDs.add(sharedPreferences.getInt(key, 0))
+            }
+            PaymentOK = sharedPreferences.getBoolean("payment", false)
+        }catch (_: Exception){
+
         }
-        PaymentOK = sharedPreferences.getBoolean("payment", false)
     }
 }
