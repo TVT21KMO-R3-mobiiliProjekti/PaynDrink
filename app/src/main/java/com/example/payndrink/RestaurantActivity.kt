@@ -23,6 +23,7 @@ class RestaurantActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
 
     private val dbAccess = DatabaseAccess()
+    private val globals = Globals()
     private var connection: Connection? = null
     private var restaurant: Restaurant? = null
     //private var seatID: Int? = null
@@ -47,7 +48,7 @@ class RestaurantActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null) {
+                        if (ActiveOrderID == null || ActiveOrderID == 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             scannerLauncher.launch(intent)
                         }
@@ -55,7 +56,7 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null){
+                        if(ActiveOrderID == null || ActiveOrderID == 0){
                             Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
@@ -122,7 +123,7 @@ class RestaurantActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
                 var qty = 1
-                if (ActiveOrderID != null) {
+                if (ActiveOrderID != null && ActiveOrderID != 0) {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, items[position].id!! )} ?: 0
                 }
@@ -151,7 +152,7 @@ class RestaurantActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
                 var qty = 0
-                if (ActiveOrderID != null) {
+                if (ActiveOrderID != null && ActiveOrderID != 0)  {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, quickList[position].id!! )} ?: 0
                 }
@@ -180,7 +181,7 @@ class RestaurantActivity : AppCompatActivity() {
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
         Globals.PaymentOK = false
-        if (ActiveOrderID == null) {
+        if (ActiveOrderID == null || ActiveOrderID == 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
             ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
@@ -202,6 +203,7 @@ class RestaurantActivity : AppCompatActivity() {
                         Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
                         if (ret < 0) {
                             ActiveOrderID = null
+                            globals.savePreferences()
                             Toast.makeText(this@RestaurantActivity, "Shopping cart is empty", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -209,9 +211,9 @@ class RestaurantActivity : AppCompatActivity() {
                 }
             }
         }
-
+        globals.savePreferences()
         if (qty < 1) return    //Quantity is 0 -> No need to add new item
-        if (ActiveOrderID == null) {
+        if (ActiveOrderID == null || ActiveOrderID == 0) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
         }
@@ -239,6 +241,7 @@ class RestaurantActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 Globals.ActiveSeatID = seatID.toInt()
+                globals.savePreferences()
                 updateView()
             } else Toast.makeText(this@RestaurantActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()

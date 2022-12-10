@@ -22,6 +22,7 @@ import java.sql.Connection
 
 class ShoppingCartActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
+    private val globals = Globals()
     private var connection: Connection? = null
     private var totalPrice: Double? = 0.0
     private lateinit var itemList: List<ShoppingcartItem>
@@ -43,7 +44,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         bUpdate.setOnClickListener{
             updateOrder()
         }
-        if (PaymentOK) bPay.text = "Send Order"
+        if (PaymentOK) bPay.text = getString(R.string.send_order)
         bPay.setOnClickListener{
             if (!PaymentOK) {
                 val intent = Intent(applicationContext, PaymentActivity::class.java)
@@ -98,13 +99,14 @@ class ShoppingCartActivity : AppCompatActivity() {
 
     /** Delete all items from shopping cart */
     private fun deleteOrder() {
-        var ret : Int = 0
+        var ret = 0
         //Delete items (will finally also delete order)
         for (item in itemList) {
             ret = connection?.let { dbAccess.deleteItemInOrder(it, item.id, ActiveOrderID!!) }!!
         }
         if (ret < 0) {
             ActiveOrderID = null
+            globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now empty", Toast.LENGTH_SHORT).show()
         }
         else Toast.makeText(this@ShoppingCartActivity, "Clearing shopping cart failed!", Toast.LENGTH_LONG).show()
@@ -117,7 +119,8 @@ class ShoppingCartActivity : AppCompatActivity() {
             if (!sendOrder()) {
                 //Payment OK, but sending failed -> Next time button will allow to try order directly
                 PaymentOK = true
-                bPay.text = "Send Order"
+                globals.savePreferences()
+                bPay.text = getString(R.string.send_order)
             }
         }
         else {
@@ -128,10 +131,11 @@ class ShoppingCartActivity : AppCompatActivity() {
     /** Set send order flag to DB, start status activity and finish this one */
     private fun sendOrder(): Boolean {
         val connection = dbAccess.connectToDatabase()
-        var ret : Int = connection?.let {dbAccess.sendOrder(it, Globals.ActiveOrderID!!) }!!
+        val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
         if (ret >= 0) {
             TrackedOrderIDs.add(ActiveOrderID!!)
             ActiveOrderID = null
+            globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling
             val intent = Intent(applicationContext, StatusActivity::class.java)

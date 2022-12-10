@@ -1,6 +1,7 @@
 package com.example.payndrink
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
@@ -13,6 +14,7 @@ import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
+import com.example.payndrink.data.Globals.Companion.sharedPreferences
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMainBinding
 
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityMainBinding
+    private val globals = Globals()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null) {
+                        if (ActiveOrderID == null || ActiveOrderID == 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             resultLauncher.launch(intent)
                         }
@@ -48,7 +51,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
+                        if (ActiveSeatID == null || ActiveSeatID == 0) {
+                            ActiveSeatID = 1  //Design time! Muista poistaa!!!
+                            globals.savePreferences()
+                        }
                         if (ActiveSeatID != null) {
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
@@ -58,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null){
+                        if(ActiveOrderID == null || ActiveOrderID == 0){
                             Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
@@ -95,6 +101,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        sharedPreferences = this@MainActivity.getPreferences(Context.MODE_PRIVATE)
+        globals.loadPreferences()
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true
@@ -111,6 +122,7 @@ class MainActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 ActiveSeatID = seatID.toInt()
+                globals.savePreferences();
                 startActivity(Intent(applicationContext, RestaurantActivity::class.java))
             } else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()
