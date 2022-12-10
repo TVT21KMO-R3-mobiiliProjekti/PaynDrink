@@ -26,6 +26,7 @@ class StatusActivity : AppCompatActivity() {
     private var connection: Connection? = null
     private var order: Order? = null
     private var activeOrderIdx: Int = 0
+    private var coroutineOrderIdx: Int = 0
     private lateinit var itemList: List<StatusItem>
     private lateinit var items: MutableList<OrderHasItems>
     private lateinit var layoutManager: LinearLayoutManager
@@ -61,6 +62,7 @@ class StatusActivity : AppCompatActivity() {
         }
         else {
             activeOrderIdx = TrackedOrderIDs.count() - 1
+            coroutineOrderIdx = activeOrderIdx
             tvOrderID.text = (activeOrderIdx + 1).toString()
             updateView()
         }
@@ -69,13 +71,14 @@ class StatusActivity : AppCompatActivity() {
     /** Start coroutine for database polling and UI updating */
     private fun updateView() {
         scope.launch(Dispatchers.IO) {
+            var noDelay: Boolean = false
             while(scope.isActive) {
                 //Get data from DB
                 if (connection == null) connection = dbAccess.connectToDatabase()
-                order = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getPlacedOrder(it1, it)}}
+                order = TrackedOrderIDs[coroutineOrderIdx].let { connection?.let { it1 -> dbAccess.getPlacedOrder(it1, it)}}
                 itemList = emptyList()
                 if (order != null) {
-                    items = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
+                    items = TrackedOrderIDs[coroutineOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
                     for(item in items){
                         itemList = itemList + StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order!!.rejected!! > 0)
                     }
@@ -84,6 +87,9 @@ class StatusActivity : AppCompatActivity() {
                 adapter = StatusItemAdapter(itemList)
                 //Dispatch changes to UI
                 withContext(Dispatchers.Main) {
+                   noDelay = coroutineOrderIdx != activeOrderIdx
+                    coroutineOrderIdx = activeOrderIdx
+
                     if (order != null) {
                         if (order!!.fulfilled!! > 0) {
                             tvOrderStatus.text = "General status: Deliveried"
@@ -112,7 +118,7 @@ class StatusActivity : AppCompatActivity() {
                     rv_status_items.adapter = adapter
                 }
                 //Polling delay
-                delay(STATUS_POLLING_INTERVAL)
+                if(!noDelay) delay(STATUS_POLLING_INTERVAL)
             }
         }
     }
