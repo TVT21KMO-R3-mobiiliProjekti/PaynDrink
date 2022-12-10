@@ -17,5 +17,5 @@
         <item
             android:id="@+id/itemStatus"
             android:icon="@drawable/ic_baseline_restaurant_24"
-            android:title="Order Status" />
+            android:title="Order(s) status" />
 </menu>

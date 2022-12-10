@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.PaymentOK
+import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
 import com.example.payndrink.data.ShoppingcartItem
 import com.example.payndrink.data.ShoppingcartItemAdapter
 import com.example.payndrink.database.DatabaseAccess
@@ -129,7 +130,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         val connection = dbAccess.connectToDatabase()
         var ret : Int = connection?.let {dbAccess.sendOrder(it, Globals.ActiveOrderID!!) }!!
         if (ret >= 0) {
-            Globals.PendingOrderID = ActiveOrderID
+            TrackedOrderIDs.add(ActiveOrderID!!)
             ActiveOrderID = null
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling

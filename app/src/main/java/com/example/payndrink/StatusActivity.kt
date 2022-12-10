@@ -7,8 +7,10 @@ import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.*
+import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Order
 import com.example.payndrink.database.OrderHasItems
@@ -23,6 +25,7 @@ class StatusActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
     private var order: Order? = null
+    private var activeOrderIdx: Int = 0
     private lateinit var itemList: List<StatusItem>
     private lateinit var items: MutableList<OrderHasItems>
     private lateinit var layoutManager: LinearLayoutManager
@@ -38,19 +41,41 @@ class StatusActivity : AppCompatActivity() {
         rv_status_items.layoutManager = layoutManager
         rv_status_items.setHasFixedSize(true)
 
-        updateView()
+        btnMinus.setOnClickListener {
+            //Is this actually coroutine / thread-safe??
+            if(activeOrderIdx > 0) {
+                activeOrderIdx--
+                tvOrderID.text = (activeOrderIdx + 1).toString()
+            }
+        }
+        btnPlus.setOnClickListener {
+            //Is this actually coroutine / thread-safe??
+            if(activeOrderIdx < TrackedOrderIDs.count() - 1) {
+                activeOrderIdx++
+                tvOrderID.text = (activeOrderIdx + 1).toString()
+            }
+        }
+
+        if (TrackedOrderIDs.isEmpty()) {
+            Toast.makeText(this@StatusActivity, "No pending orders!", Toast.LENGTH_SHORT).show()
+        }
+        else {
+            activeOrderIdx = TrackedOrderIDs.count() - 1
+            tvOrderID.text = (activeOrderIdx + 1).toString()
+            updateView()
+        }
     }
 
     /** Start coroutine for database polling and UI updating */
     private fun updateView() {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             while(scope.isActive) {
                 //Get data from DB
                 if (connection == null) connection = dbAccess.connectToDatabase()
-                order = Globals.PendingOrderID?.let { connection?.let { it1 -> dbAccess.getPlacedOrder(it1, it)}}
+                order = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getPlacedOrder(it1, it)}}
                 itemList = emptyList()
                 if (order != null) {
-                    items = Globals.PendingOrderID?.let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
+                    items = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
                     for(item in items){
                         itemList = itemList + StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order!!.rejected!! > 0)
                     }
@@ -61,14 +86,11 @@ class StatusActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (order != null) {
                         if (order!!.fulfilled!! > 0) {
-                            tvOrderStatus.text = "General status: FULFILLED!"
+                            tvOrderStatus.text = "General status: Deliveried"
                             tvOrderStatus.setTextColor(Color.CYAN)
-                            tvOrderMessage.text = "Returning to main menu..."
-                            //TODO: Poistutaan viiveella (kaikista tiloista?)
-                            //Globals.PendingOrderID = null
-                            //finish()
+                            tvOrderMessage.text = "This order is deliveried"
                         }
-                        if (order!!.rejected!! > 0) {
+                        else if (order!!.rejected!! > 0) {
                             tvOrderStatus.text = "General status: REJECTED!"
                             tvOrderStatus.setTextColor(Color.RED)
                             tvOrderMessage.text = order!!.rejectReason
@@ -83,7 +105,7 @@ class StatusActivity : AppCompatActivity() {
                             tvOrderStatus.setTextColor(Color.GREEN)
                             val simpleDateFormat = SimpleDateFormat("H:mm")
                             val timeString = simpleDateFormat.format(order!!.exceptedDelivery)
-                            tvOrderMessage.text = "Waiter accepted order. Please wait (estimated time: $timeString)"
+                            tvOrderMessage.text = "Waiter accepted order. Please wait (estimated delivery time: $timeString)"
                         }
                     }
                     adapter.notifyDataSetChanged()

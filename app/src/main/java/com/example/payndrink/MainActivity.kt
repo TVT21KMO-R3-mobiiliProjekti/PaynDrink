@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
-import com.example.payndrink.data.Globals.Companion.PendingOrderID
+import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMainBinding
 
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemStatus -> {
                         drawerLayout.closeDrawers()
-                        if(PendingOrderID == null){
+                        if(TrackedOrderIDs.isEmpty()){
                             Toast.makeText(this@MainActivity, "No pending orders", Toast.LENGTH_SHORT).show()
                         }
                         else {
