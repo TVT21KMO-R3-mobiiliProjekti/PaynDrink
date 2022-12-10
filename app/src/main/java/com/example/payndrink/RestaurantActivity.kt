@@ -23,6 +23,7 @@ class RestaurantActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMenuBinding
 
     private val dbAccess = DatabaseAccess()
+    private val globals = Globals()
     private var connection: Connection? = null
     private var restaurant: Restaurant? = null
     //private var seatID: Int? = null
@@ -167,6 +168,7 @@ class RestaurantActivity : AppCompatActivity() {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
             ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
+            globals.savePreferences()
         }
         else {
             //Check if item already exists in active order
@@ -185,6 +187,7 @@ class RestaurantActivity : AppCompatActivity() {
                         Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
                         if (ret < 0) {
                             ActiveOrderID = null
+                            globals.savePreferences()
                             Toast.makeText(this@RestaurantActivity, "Shopping cart is empty", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -222,6 +225,7 @@ class RestaurantActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 Globals.ActiveSeatID = seatID.toInt()
+                globals.savePreferences()
                 updateView()
             } else Toast.makeText(this@RestaurantActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()

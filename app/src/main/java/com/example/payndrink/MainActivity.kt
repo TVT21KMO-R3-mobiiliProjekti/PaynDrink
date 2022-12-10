@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
 import com.example.payndrink.data.Utilities
@@ -18,12 +19,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityMainBinding
-
+    private val globals = Globals()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectNetwork().permitAll().penaltyLog().build()) //DEBUGGING
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        globals.loadPreferences()
         binding.apply {
             toggle = ActionBarDrawerToggle(this@MainActivity, drawerLayout, R.string.open, R.string.closed)
             drawerLayout.addDrawerListener(toggle)
@@ -40,7 +42,10 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveSeatID == null) ActiveSeatID = 1  //Design time! Muista poistaa!!!
+                        if (ActiveSeatID == null) {
+                            ActiveSeatID = 1  //Design time! Muista poistaa!!!
+                            globals.savePreferences()
+                        }
                         if (ActiveSeatID != null) {
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
@@ -90,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             val utilities = Utilities()
             if (seatID?.let { utilities.isNumeric(it) } == true) {
                 ActiveSeatID = seatID.toInt()
+                globals.savePreferences();
                 startActivity(Intent(applicationContext, RestaurantActivity::class.java))
             } else Toast.makeText(this@MainActivity, "Unknown QR-code scanned!", Toast.LENGTH_SHORT)
                 .show()
