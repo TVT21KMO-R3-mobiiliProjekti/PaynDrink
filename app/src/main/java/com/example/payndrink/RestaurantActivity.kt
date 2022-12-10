@@ -159,6 +159,7 @@ class RestaurantActivity : AppCompatActivity() {
                 if (qty < MAX_QTY) {
                     qty += 1
                     addItemToOrder(quickList[position].id!!, qty, quickList[position].itemName!!)
+
                 }
                 else Toast.makeText(this@RestaurantActivity, "Maximum quantity is $MAX_QTY", Toast.LENGTH_SHORT).show()
             }
