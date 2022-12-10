@@ -22,6 +22,7 @@ import java.sql.Connection
 
 class ShoppingCartActivity : AppCompatActivity() {
     private val dbAccess = DatabaseAccess()
+    private val globals = Globals()
     private var connection: Connection? = null
     private var totalPrice: Double? = 0.0
     private lateinit var itemList: List<ShoppingcartItem>
@@ -117,6 +118,7 @@ class ShoppingCartActivity : AppCompatActivity() {
             if (!sendOrder()) {
                 //Payment OK, but sending failed -> Next time button will allow to try order directly
                 PaymentOK = true
+                globals.savePreferences()
                 bPay.text = "Send Order"
             }
         }
@@ -132,6 +134,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         if (ret >= 0) {
             TrackedOrderIDs.add(ActiveOrderID!!)
             ActiveOrderID = null
+            globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling
             val intent = Intent(applicationContext, StatusActivity::class.java)

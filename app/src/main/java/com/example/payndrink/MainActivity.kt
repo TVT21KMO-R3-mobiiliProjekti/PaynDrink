@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null) {
+                        if (ActiveOrderID == null || ActiveOrderID == 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             resultLauncher.launch(intent)
                         }
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveSeatID == null) {
+                        if (ActiveSeatID == null || ActiveSeatID == 0) {
                             ActiveSeatID = 1  //Design time! Muista poistaa!!!
                             globals.savePreferences()
                         }
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null){
+                        if(ActiveOrderID == null || ActiveOrderID == 0){
                             Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{

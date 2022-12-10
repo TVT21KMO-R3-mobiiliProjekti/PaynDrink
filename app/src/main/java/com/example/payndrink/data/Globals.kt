@@ -34,5 +34,11 @@ class Globals : Application() {
         val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
         ActiveSeatID = sharedPreferences.getInt("seat", 0)
         ActiveOrderID = sharedPreferences.getInt("order", 0)
+        val orders = sharedPreferences.getInt("orders", 0)
+        for(i in 1..orders){
+            val key = "order$i"
+            TrackedOrderIDs.add(sharedPreferences.getInt(key, 0))
+        }
+        PaymentOK = sharedPreferences.getBoolean("payment", false)
     }
 }

@@ -48,7 +48,7 @@ class RestaurantActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null) {
+                        if (ActiveOrderID == null || ActiveOrderID == 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             scannerLauncher.launch(intent)
                         }
@@ -56,7 +56,7 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null){
+                        if(ActiveOrderID == null || ActiveOrderID == 0){
                             Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
@@ -123,7 +123,7 @@ class RestaurantActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
                 var qty = 1
-                if (ActiveOrderID != null) {
+                if (ActiveOrderID != null && ActiveOrderID != 0) {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, items[position].id!! )} ?: 0
                 }
@@ -152,7 +152,7 @@ class RestaurantActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
                 var qty = 0
-                if (ActiveOrderID != null) {
+                if (ActiveOrderID != null && ActiveOrderID != 0)  {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, quickList[position].id!! )} ?: 0
                 }
@@ -181,7 +181,8 @@ class RestaurantActivity : AppCompatActivity() {
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
         Globals.PaymentOK = false
-        if (ActiveOrderID == null) {
+        globals.savePreferences()
+        if (ActiveOrderID == null || ActiveOrderID == 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
             ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
@@ -214,7 +215,7 @@ class RestaurantActivity : AppCompatActivity() {
         }
 
         if (qty < 1) return    //Quantity is 0 -> No need to add new item
-        if (ActiveOrderID == null) {
+        if (ActiveOrderID == null || ActiveOrderID == 0) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
         }
