@@ -105,7 +105,7 @@ class ShoppingCartActivity : AppCompatActivity() {
             ret = connection?.let { dbAccess.deleteItemInOrder(it, item.id, ActiveOrderID!!) }!!
         }
         if (ret < 0) {
-            ActiveOrderID = null
+            ActiveOrderID = 0
             globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now empty", Toast.LENGTH_SHORT).show()
         }
@@ -134,7 +134,7 @@ class ShoppingCartActivity : AppCompatActivity() {
         val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
         if (ret >= 0) {
             TrackedOrderIDs.add(ActiveOrderID!!)
-            ActiveOrderID = null
+            ActiveOrderID = 0
             globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling
