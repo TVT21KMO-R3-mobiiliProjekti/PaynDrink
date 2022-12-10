@@ -28,5 +28,5 @@
     <string name="status_accepted">General status: Accepted</string>
     <string name="status_waiting">General status: Waiting</string>
     <string name="waiting_waiter">Waiting for the waiter to accept the order</string>
-    <string name="delete_this_tracking">Delete THIS TRACKING</string>
+    <string name="delete_tracking">Untrack this order</string>
 </resources>
