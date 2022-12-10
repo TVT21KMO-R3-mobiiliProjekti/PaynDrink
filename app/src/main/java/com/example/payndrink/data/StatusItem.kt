@@ -5,6 +5,6 @@ data class StatusItem (
     val itemName: String?,
     val orderedQty: Int,
     val refundedQty: Int,
-    val deliveriedQty: Int,
+    val deliveredQty: Int,
     val rejected: Boolean
 )

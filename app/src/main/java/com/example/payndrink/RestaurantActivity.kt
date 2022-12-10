@@ -184,7 +184,7 @@ class RestaurantActivity : AppCompatActivity() {
         if (ActiveOrderID == null || ActiveOrderID == 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }!!
         }
         else {
             //Check if item already exists in active order
@@ -202,7 +202,7 @@ class RestaurantActivity : AppCompatActivity() {
                     if ( ret != 0) {
                         Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
                         if (ret < 0) {
-                            ActiveOrderID = null
+                            ActiveOrderID = 0
                             globals.savePreferences()
                             Toast.makeText(this@RestaurantActivity, "Shopping cart is empty", Toast.LENGTH_SHORT).show()
                         }

@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.icu.text.SimpleDateFormat
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.payndrink.data.*
 import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
+import com.example.payndrink.data.StatusItem
+import com.example.payndrink.data.StatusItemAdapter
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Order
 import com.example.payndrink.database.OrderHasItems
@@ -18,9 +19,11 @@ import com.example.payndrink.databinding.ActivityStatusBinding
 import kotlinx.android.synthetic.main.activity_status.*
 import kotlinx.coroutines.*
 import java.sql.Connection
+import java.util.*
 
 class StatusActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStatusBinding
+    @OptIn(DelicateCoroutinesApi::class)
     private val scope = CoroutineScope(newSingleThreadContext("Polling"))
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
@@ -46,14 +49,18 @@ class StatusActivity : AppCompatActivity() {
             //Is this actually coroutine / thread-safe??
             if(activeOrderIdx > 0) {
                 activeOrderIdx--
-                tvOrderID.text = (activeOrderIdx + 1).toString()
+                coroutineOrderIdx = activeOrderIdx
+                tvOrderID.text = String.format("%s", (activeOrderIdx + 1).toString())
+                updateView()
             }
         }
         btnPlus.setOnClickListener {
             //Is this actually coroutine / thread-safe??
             if(activeOrderIdx < TrackedOrderIDs.count() - 1) {
                 activeOrderIdx++
-                tvOrderID.text = (activeOrderIdx + 1).toString()
+                coroutineOrderIdx = activeOrderIdx
+                tvOrderID.text = String.format("%s", (activeOrderIdx + 1).toString())
+                updateView()
             }
         }
 
@@ -63,7 +70,7 @@ class StatusActivity : AppCompatActivity() {
         else {
             activeOrderIdx = TrackedOrderIDs.count() - 1
             coroutineOrderIdx = activeOrderIdx
-            tvOrderID.text = (activeOrderIdx + 1).toString()
+            tvOrderID.text = String.format("%s", (activeOrderIdx + 1).toString())
             updateView()
         }
     }
@@ -71,7 +78,7 @@ class StatusActivity : AppCompatActivity() {
     /** Start coroutine for database polling and UI updating */
     private fun updateView() {
         scope.launch(Dispatchers.IO) {
-            var noDelay: Boolean = false
+            var noDelay: Boolean
             while(scope.isActive) {
                 //Get data from DB
                 if (connection == null) connection = dbAccess.connectToDatabase()
@@ -80,7 +87,10 @@ class StatusActivity : AppCompatActivity() {
                 if (order != null) {
                     items = TrackedOrderIDs[coroutineOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
                     for(item in items){
-                        itemList = itemList + StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order!!.rejected!! > 0)
+                        val statusItem = StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order!!.rejected!! > 0)
+                        if(!itemList.contains(statusItem)) {
+                            itemList = itemList + statusItem
+                        }
                     }
                 }
                 //Set adapter
@@ -92,30 +102,38 @@ class StatusActivity : AppCompatActivity() {
 
                     if (order != null) {
                         if (order!!.fulfilled!! > 0) {
-                            tvOrderStatus.text = "General status: Deliveried"
+                            tvOrderStatus.text = getString(R.string.status_delivered)
                             tvOrderStatus.setTextColor(Color.CYAN)
-                            tvOrderMessage.text = "This order is deliveried"
+                            tvOrderMessage.text = getString(R.string.order_delivered)
                         }
                         else if (order!!.rejected!! > 0) {
-                            tvOrderStatus.text = "General status: REJECTED!"
+                            tvOrderStatus.text = getString(R.string.status_rejected)
                             tvOrderStatus.setTextColor(Color.RED)
                             tvOrderMessage.text = order!!.rejectReason
                         }
                         else if (order!!.refund!! > 0) {
-                            tvOrderStatus.text = "General status: Refunded!"
+                            tvOrderStatus.text = getString(R.string.status_refunded)
                             tvOrderStatus.setTextColor(Color.MAGENTA)
-                            tvOrderMessage.text = "Restaurant refunded some of order! " + order!!.refundReason
+                            tvOrderMessage.text = String.format("%s %s",
+                                "Restaurant refunded some of order!", order!!.refundReason)
                         }
                         else if (order!!.accepted!! > 0) {
-                            tvOrderStatus.text = "General status: Accepted"
+                            tvOrderStatus.text = getString(R.string.status_accepted)
                             tvOrderStatus.setTextColor(Color.GREEN)
                             val simpleDateFormat = SimpleDateFormat("H:mm")
                             val timeString = simpleDateFormat.format(order!!.exceptedDelivery)
-                            tvOrderMessage.text = "Waiter accepted order. Please wait (estimated delivery time: $timeString)"
+                            tvOrderMessage.text = String.format("%s %s",
+                                "Waiter accepted order. Please wait (estimated delivery time:",
+                                timeString)
+                        }
+                        else{
+                            tvOrderStatus.text = getString(R.string.status_waiting)
+                            tvOrderStatus.setTextColor(Color.parseColor("#800080"))
+                            tvOrderMessage.text = getString(R.string.waiting_waiter)
                         }
                     }
-                    adapter.notifyDataSetChanged()
                     rv_status_items.adapter = adapter
+                    adapter.notifyDataSetChanged()
                 }
                 //Polling delay
                 if(!noDelay) delay(STATUS_POLLING_INTERVAL)

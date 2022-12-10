@@ -15,7 +15,7 @@ class StatusItemAdapter ( private val statusItemList: List<StatusItem>): Recycle
         val tvName: TextView = itemView.tvName
         val tvOrderedQty: TextView = itemView.tvOrderedQty
         val tvRefundedQty: TextView = itemView.tvRefundedQty
-        val tvDeliveriedQty: TextView = itemView.tvDeliveriedQty
+        val tvDeliveredQty: TextView = itemView.tvDeliveriedQty
         val card: CardView = itemView.cv_menu_item
 
     }
@@ -35,9 +35,9 @@ class StatusItemAdapter ( private val statusItemList: List<StatusItem>): Recycle
         holder.tvName.text = statusItemList[position].itemName
         holder.tvOrderedQty.text = statusItemList[position].orderedQty.toString()
         holder.tvRefundedQty.text = statusItemList[position].refundedQty.toString()
-        holder.tvDeliveriedQty.text = statusItemList[position].deliveriedQty.toString()
+        holder.tvDeliveredQty.text = statusItemList[position].deliveredQty.toString()
         if (statusItemList[position].rejected) holder.card.setCardBackgroundColor(Color.RED)
-        else if (statusItemList[position].deliveriedQty == statusItemList[position].orderedQty) holder.card.setCardBackgroundColor(Color.GREEN)
+        else if (statusItemList[position].deliveredQty == statusItemList[position].orderedQty) holder.card.setCardBackgroundColor(Color.GREEN)
         else if (statusItemList[position].refundedQty > 0) holder.card.setCardBackgroundColor(Color.MAGENTA)
         else holder.card.setCardBackgroundColor(Color.WHITE)
 

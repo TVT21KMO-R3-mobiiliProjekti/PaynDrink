@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 
 class Globals : Application() {
     companion object {
-        var ActiveSeatID : Int? = null
-        var ActiveOrderID : Int? = null
+        var ActiveSeatID : Int = 0
+        var ActiveOrderID : Int = 0
         var TrackedOrderIDs : MutableList<Int> = ArrayList()
         var PaymentOK : Boolean = false
         lateinit var sharedPreferences: SharedPreferences
