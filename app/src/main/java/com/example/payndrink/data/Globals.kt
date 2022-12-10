@@ -6,7 +6,7 @@ class Globals : Application() {
     companion object {
         var ActiveSeatID : Int? = null
         var ActiveOrderID : Int? = null
-        var PendingOrderID : Int? = null
+        var TrackedOrderIDs : MutableList<Int> = ArrayList()
         var PaymentOK : Boolean = false
     }
 

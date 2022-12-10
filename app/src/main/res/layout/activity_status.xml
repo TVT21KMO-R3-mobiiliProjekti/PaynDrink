@@ -51,10 +51,62 @@
         app:layout_constrainedHeight="true"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toBottomOf="@id/tvOrderMessage"
+        app:layout_constraintStart_toStartOf="parent"
         android:background="@color/cardview_light_background"
         android:orientation="horizontal">
-
     </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/layoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSelectOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:minHeight="50dp"
+            android:paddingEnd="10dp"
+            android:text="Order id:"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnMinus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded"
+            android:text="-" />
+
+        <TextView
+            android:id="@+id/tvOrderID"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:gravity="end"
+            android:inputType="number"
+            android:minHeight="50dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@string/_1"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnPlus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded"
+            android:text="@string/plus" />
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

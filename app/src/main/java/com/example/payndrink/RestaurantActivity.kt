@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.payndrink.data.*
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
-import com.example.payndrink.data.Globals.Companion.PendingOrderID
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
@@ -67,7 +66,7 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemStatus -> {
                         drawerLayout.closeDrawers()
-                        if(PendingOrderID == null){
+                        if(Globals.TrackedOrderIDs.isEmpty()){
                             Toast.makeText(this@RestaurantActivity, "No pending orders", Toast.LENGTH_SHORT).show()
                         }
                         else {
