@@ -19,4 +19,5 @@
     <string name="clear">Clear Cart</string>
     <string name="minus">-</string>
     <string name="payment_demonstration">PAYMENT DEMONSTRATION</string>
+    <string name="order_status">ORDER STATUS</string>
 </resources>

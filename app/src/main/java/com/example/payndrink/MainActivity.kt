@@ -12,8 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.ActiveOrderID
 import com.example.payndrink.data.Globals.Companion.ActiveSeatID
+import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMainBinding
+
+const val MAX_QTY : Int = 100
+const val STATUS_POLLING_INTERVAL : Long = 5000      //in milliseconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,8 +41,11 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        val intent = Intent(applicationContext, ScannerSubActivity::class.java)
-                        resultLauncher.launch(intent)
+                        if (ActiveOrderID == null) {
+                            val intent = Intent(applicationContext, ScannerSubActivity::class.java)
+                            resultLauncher.launch(intent)
+                        }
+                        else Toast.makeText(this@MainActivity, "You must complete or cancel your active order to scan again!", Toast.LENGTH_LONG).show()
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
@@ -62,6 +69,19 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
+                        }
+                    }
+                    R.id.itemStatus -> {
+                        drawerLayout.closeDrawers()
+                        if(TrackedOrderIDs.isEmpty()){
+                            Toast.makeText(this@MainActivity, "No pending orders", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            Toast.makeText(
+                                this@MainActivity,"Please wait a moment...", Toast.LENGTH_LONG
+                            ).show()
+                            Thread.sleep(500)
+                            startActivity(Intent(this@MainActivity, StatusActivity::class.java))
                         }
                     }
                 }

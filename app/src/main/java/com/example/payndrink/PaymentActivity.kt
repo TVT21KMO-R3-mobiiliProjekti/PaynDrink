@@ -31,21 +31,12 @@ class PaymentActivity : AppCompatActivity() {
         }
 
         binding.btnPay.setOnClickListener {
-            if (sendOrder())
-                setResult(Activity.RESULT_OK)
-            else setResult(Activity.RESULT_CANCELED)
+            //Emulate payment
+            Toast.makeText(this@PaymentActivity, "Sending payment...", Toast.LENGTH_SHORT).show()
+            Thread.sleep(1000)
+            setResult(Activity.RESULT_OK, Intent())
+            finish()
         }
-    }
-
-    /** Set send order flag to DB */
-    private fun sendOrder(): Boolean {
-        val connection = dbAccess.connectToDatabase()
-        var ret : Int = connection?.let {dbAccess.sendOrder(it, Globals.ActiveOrderID!!) }!!
-        if (ret >= 0) {
-            Toast.makeText(this@PaymentActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
-        }
-        else Toast.makeText(this@PaymentActivity, "Sending order failed!", Toast.LENGTH_LONG).show()
-        return ret >= 0
     }
 
     /** Handle navigate back button */

@@ -8,6 +8,8 @@ class Globals : Application() {
     companion object {
         var ActiveSeatID : Int? = null
         var ActiveOrderID : Int? = null
+        var TrackedOrderIDs : MutableList<Int> = ArrayList()
+        var PaymentOK : Boolean = false
     }
 
     // Save active seat and order to preferences in phone memory
@@ -16,6 +18,14 @@ class Globals : Application() {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         ActiveSeatID?.let { editor.putInt("seat", it) }
         ActiveOrderID?.let { editor.putInt("order", it) }
+        editor.putInt("orders", TrackedOrderIDs.size)
+        var count = 0
+        for(orderID in TrackedOrderIDs){
+            count++
+            val key = "order$count"
+            editor.putInt(key, orderID)
+        }
+        editor.putBoolean("payment", PaymentOK)
         editor.apply()
     }
 

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    tools:context=".MenuItemActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="10dp"
+        android:text="@string/order_status"
+        android:textColor="@color/purple_700"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvOrderStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="16dp"
+        android:text="General status: Waiting"
+        android:textColor="@color/purple"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvOrderMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvOrderStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="10dp"
+        android:text="Waiting for the waiter to accept the order"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_status_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/tvOrderMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/cardview_light_background"
+        android:orientation="horizontal">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/layoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSelectOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:minHeight="50dp"
+            android:paddingEnd="10dp"
+            android:text="Order id:"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnMinus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded"
+            android:text="-" />
+
+        <TextView
+            android:id="@+id/tvOrderID"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:gravity="end"
+            android:inputType="number"
+            android:minHeight="50dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@string/_1"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnPlus"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded"
+            android:text="@string/plus" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
