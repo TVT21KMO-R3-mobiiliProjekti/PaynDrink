@@ -56,6 +56,17 @@
         android:orientation="horizontal">
     </androidx.recyclerview.widget.RecyclerView>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/layoutBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/red"
+        app:cornerRadius="100dp"
+        android:text="@string/delete_tracking" />
+
     <LinearLayout
         android:id="@+id/layoutBottom"
         android:layout_width="match_parent"
@@ -107,6 +118,5 @@
             android:text="@string/plus" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
