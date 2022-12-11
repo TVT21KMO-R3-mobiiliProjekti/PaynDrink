@@ -133,7 +133,9 @@ class ShoppingCartActivity : AppCompatActivity() {
         val connection = dbAccess.connectToDatabase()
         val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
         if (ret >= 0) {
-            TrackedOrderIDs.add(ActiveOrderID!!)
+            if(!TrackedOrderIDs.contains(ActiveOrderID)) {
+                TrackedOrderIDs.add(ActiveOrderID!!)
+            }
             ActiveOrderID = 0
             globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()

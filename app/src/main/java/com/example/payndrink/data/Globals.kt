@@ -35,7 +35,9 @@ class Globals : Application() {
             val orders = sharedPreferences.getInt("orders", 0)
             for (i in 1..orders) {
                 val key = "order$i"
-                TrackedOrderIDs.add(sharedPreferences.getInt(key, 0))
+                if(!TrackedOrderIDs.contains(sharedPreferences.getInt(key, 0))) {
+                    TrackedOrderIDs.add(sharedPreferences.getInt(key, 0))
+                }
             }
             PaymentOK = sharedPreferences.getBoolean("payment", false)
         }catch (_: Exception){

@@ -275,7 +275,9 @@ class RestaurantActivity : AppCompatActivity() {
         val connection = dbAccess.connectToDatabase()
         val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID) }!!
         if (ret >= 0) {
-            Globals.TrackedOrderIDs.add(ActiveOrderID)
+            if(!Globals.TrackedOrderIDs.contains(ActiveOrderID)) {
+                Globals.TrackedOrderIDs.add(ActiveOrderID!!)
+            }
             ActiveOrderID = 0
             globals.savePreferences()
             Toast.makeText(this@RestaurantActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
