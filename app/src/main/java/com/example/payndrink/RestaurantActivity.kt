@@ -21,7 +21,7 @@ import java.sql.Connection
 class RestaurantActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityMenuBinding
-
+    private var totalPrice: Double? = 0.0
     private val dbAccess = DatabaseAccess()
     private val globals = Globals()
     private var connection: Connection? = null
@@ -48,7 +48,7 @@ class RestaurantActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null || ActiveOrderID == 0) {
+                        if (ActiveOrderID == 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             scannerLauncher.launch(intent)
                         }
@@ -56,7 +56,7 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null || ActiveOrderID == 0){
+                        if(ActiveOrderID == 0){
                             Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
@@ -86,14 +86,14 @@ class RestaurantActivity : AppCompatActivity() {
         updateView()
     }
 
-    fun updateView() {
+    private fun updateView() {
         connection = dbAccess.connectToDatabase()
         itemGRV = binding.myGridView //   findViewById(R.id.my_grid_view)
         itemList = ArrayList()
         quickList = ArrayList()
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        restaurant = connection?.let { Globals.ActiveSeatID?.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
+        restaurant = connection?.let { Globals.ActiveSeatID.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
         if (restaurant != null) {
             items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
         }
@@ -123,9 +123,9 @@ class RestaurantActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
                 var qty = 1
-                if (ActiveOrderID != null && ActiveOrderID != 0) {
+                if (ActiveOrderID != 0) {
                     //Get quantity from existing order
-                    qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, items[position].id!! )} ?: 0
+                    qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID, items[position].id!! )} ?: 0
                 }
                 if (qty < 1) qty = 1
                 putExtra("id", itemList[position].id)
@@ -151,16 +151,16 @@ class RestaurantActivity : AppCompatActivity() {
         rv_quick_items.adapter = adapter
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
-                var qty = 0
-                if (ActiveOrderID != null && ActiveOrderID != 0)  {
-                    //Get quantity from existing order
-                    qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, quickList[position].id!! )} ?: 0
+                if (ActiveOrderID != 0)  {
+                    Toast.makeText(this@RestaurantActivity, "Can't make quick order while there is active order pending", Toast.LENGTH_SHORT).show()
                 }
-                if (qty < MAX_QTY) {
-                    qty += 1
-                    addItemToOrder(quickList[position].id!!, qty, quickList[position].itemName!!)
+                else{
+                    addItemToOrder(quickList[position].id!!, 1, quickList[position].itemName!!)
+                    totalPrice = connection?.let { dbAccess.getItemPrice(it, quickList[position].id!!) }
+                    val intent = Intent(applicationContext, PaymentActivity::class.java)
+                    intent.putExtra("totalPrice", totalPrice)
+                    paymentLauncher.launch(intent)
                 }
-                else Toast.makeText(this@RestaurantActivity, "Maximum quantity is $MAX_QTY", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -181,24 +181,28 @@ class RestaurantActivity : AppCompatActivity() {
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
         Globals.PaymentOK = false
-        if (ActiveOrderID == null || ActiveOrderID == 0) {
+        if (ActiveOrderID == 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! , Globals.ActiveSeatID!!) }!!
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! ,
+                Globals.ActiveSeatID
+            ) }!!
         }
         else {
             //Check if item already exists in active order
-            if ((connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID!!, itemID) } ?: 0) >= 1) {
+            if ((connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID, itemID) } ?: 0) >= 1) {
                 if (qty > 0) {
                     // Update quantity
-                    if (connection?.let {dbAccess.updateItemInOrder(it, qty, itemID, ActiveOrderID!!) } != null)
+                    if (connection?.let {dbAccess.updateItemInOrder(it, qty, itemID, ActiveOrderID) } != null)
                         Toast.makeText(this@RestaurantActivity, "$itemName quantity updated to $qty", Toast.LENGTH_SHORT).show()
                     else Toast.makeText(this@RestaurantActivity, "Updating '$itemName' quantity failed!", Toast.LENGTH_LONG).show()
                     return
                 }
                 else {
                     //Delete item (also order if its empty)
-                    val ret : Int = connection?.let {dbAccess.deleteItemInOrder(it, itemID, ActiveOrderID!!) }!!
+                    val ret : Int = connection?.let {dbAccess.deleteItemInOrder(it, itemID,
+                        ActiveOrderID
+                    ) }!!
                     if ( ret != 0) {
                         Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
                         if (ret < 0) {
@@ -213,13 +217,13 @@ class RestaurantActivity : AppCompatActivity() {
         }
         globals.savePreferences()
         if (qty < 1) return    //Quantity is 0 -> No need to add new item
-        if (ActiveOrderID == null || ActiveOrderID == 0) {
+        if (ActiveOrderID == 0) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
         }
         else {
             //Add item to order
-            if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID!!) } != null)
+            if (connection?.let { dbAccess.addItemToOrder(it, qty, itemID, ActiveOrderID) } != null)
                 Toast.makeText(this@RestaurantActivity, "$qty x $itemName added to shopping cart", Toast.LENGTH_SHORT).show()
             else Toast.makeText(this@RestaurantActivity, "Adding '$itemName' to shopping cart failed!", Toast.LENGTH_LONG).show()
         }
@@ -248,6 +252,40 @@ class RestaurantActivity : AppCompatActivity() {
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(this@RestaurantActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    /** Start activity and handle payment activity results **/
+    private var paymentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Toast.makeText(this@RestaurantActivity, "Payment OK, Sending order...", Toast.LENGTH_SHORT).show()
+            if (!sendOrder()) {
+                //Payment OK, but sending failed -> Next time button will allow to try order directly
+                Globals.PaymentOK = true
+                globals.savePreferences()
+                Toast.makeText(this@RestaurantActivity, "Order failed, go to shopping cart", Toast.LENGTH_LONG).show()
+            }
+        }
+        else {
+            Toast.makeText(this@RestaurantActivity, "Payment failed or canceled!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /** Set send order flag to DB, start status activity and finish this one */
+    private fun sendOrder(): Boolean {
+        val connection = dbAccess.connectToDatabase()
+        val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID) }!!
+        if (ret >= 0) {
+            Globals.TrackedOrderIDs.add(ActiveOrderID)
+            ActiveOrderID = 0
+            globals.savePreferences()
+            Toast.makeText(this@RestaurantActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
+            // Launch status polling
+            val intent = Intent(applicationContext, StatusActivity::class.java)
+            finish() //Kill this activity
+            startActivity(intent)
+        }
+        else Toast.makeText(this@RestaurantActivity, "Sending order failed!", Toast.LENGTH_LONG).show()
+        return ret >= 0
     }
 }
 
