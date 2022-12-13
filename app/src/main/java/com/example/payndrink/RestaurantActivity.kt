@@ -48,7 +48,7 @@ class RestaurantActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == 0) {
+                        if (ActiveOrderID < 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             scannerLauncher.launch(intent)
                         }
@@ -56,7 +56,7 @@ class RestaurantActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == 0){
+                        if(ActiveOrderID < 0) {
                             Toast.makeText(this@RestaurantActivity, "No active order", Toast.LENGTH_SHORT).show()
                         }
                         else{
@@ -123,7 +123,7 @@ class RestaurantActivity : AppCompatActivity() {
             val intent = Intent(applicationContext, MenuItemActivity::class.java)
             intent.apply {
                 var qty = 1
-                if (ActiveOrderID != 0) {
+                if (ActiveOrderID >= 0) {
                     //Get quantity from existing order
                     qty = connection?.let { dbAccess.getOrderItemQty(it, ActiveOrderID, items[position].id!! )} ?: 0
                 }
@@ -151,7 +151,7 @@ class RestaurantActivity : AppCompatActivity() {
         rv_quick_items.adapter = adapter
         adapter.setOnItemClickListener(object: QuickItemAdapter.onItemClickListener{
             override fun onItemClick(position: Int) {
-                if (ActiveOrderID != 0)  {
+                if (ActiveOrderID >= 0)  {
                     Toast.makeText(this@RestaurantActivity, "Can't make quick order while there is active order pending", Toast.LENGTH_SHORT).show()
                 }
                 else{
@@ -181,12 +181,10 @@ class RestaurantActivity : AppCompatActivity() {
     /** Add item to order (create order if needed), update quantity or delete item */
     private fun addItemToOrder(itemID : Int, qty : Int, itemName: String) {
         Globals.PaymentOK = false
-        if (ActiveOrderID == 0) {
+        if (ActiveOrderID < 0) {
             if (qty < 1) return     //Zero qty -> No need to add
             //Create a new order if none exists
-            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!! ,
-                Globals.ActiveSeatID
-            ) }!!
+            ActiveOrderID = connection?.let { dbAccess.createOrder(it, restaurant!!.id!!, Globals.ActiveSeatID) }!!
         }
         else {
             //Check if item already exists in active order
@@ -200,13 +198,11 @@ class RestaurantActivity : AppCompatActivity() {
                 }
                 else {
                     //Delete item (also order if its empty)
-                    val ret : Int = connection?.let {dbAccess.deleteItemInOrder(it, itemID,
-                        ActiveOrderID
-                    ) }!!
+                    val ret : Int = connection?.let {dbAccess.deleteItemInOrder(it, itemID, ActiveOrderID) }!!
                     if ( ret != 0) {
                         Toast.makeText(this@RestaurantActivity, "$itemName deleted from shopping cart", Toast.LENGTH_SHORT).show()
                         if (ret < 0) {
-                            ActiveOrderID = 0
+                            ActiveOrderID = -1
                             globals.savePreferences()
                             Toast.makeText(this@RestaurantActivity, "Shopping cart is empty", Toast.LENGTH_SHORT).show()
                         }
@@ -217,7 +213,7 @@ class RestaurantActivity : AppCompatActivity() {
         }
         globals.savePreferences()
         if (qty < 1) return    //Quantity is 0 -> No need to add new item
-        if (ActiveOrderID == 0) {
+        if (ActiveOrderID < 0) {
             Toast.makeText(this@RestaurantActivity, "Adding order to the database failed!", Toast.LENGTH_LONG).show()
             return
         }
@@ -276,9 +272,9 @@ class RestaurantActivity : AppCompatActivity() {
         val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID) }!!
         if (ret >= 0) {
             if(!Globals.TrackedOrderIDs.contains(ActiveOrderID)) {
-                Globals.TrackedOrderIDs.add(ActiveOrderID!!)
+                Globals.TrackedOrderIDs.add(ActiveOrderID)
             }
-            ActiveOrderID = 0
+            ActiveOrderID = -1
             globals.savePreferences()
             Toast.makeText(this@RestaurantActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling

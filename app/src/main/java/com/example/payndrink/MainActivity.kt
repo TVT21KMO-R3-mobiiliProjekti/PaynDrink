@@ -18,9 +18,6 @@ import com.example.payndrink.data.Globals.Companion.sharedPreferences
 import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMainBinding
 
-const val MAX_QTY : Int = 100
-const val STATUS_POLLING_INTERVAL : Long = 5000      //in milliseconds
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var toggle: ActionBarDrawerToggle
@@ -43,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId){
                     R.id.itemQR -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveOrderID == null || ActiveOrderID == 0) {
+                        if (ActiveOrderID < 0) {
                             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
                             resultLauncher.launch(intent)
                         }
@@ -51,11 +48,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
-                        if (ActiveSeatID == null || ActiveSeatID == 0) {
-                            ActiveSeatID = 1  //Design time! Muista poistaa!!!
-                            globals.savePreferences()
-                        }
-                        if (ActiveSeatID != null) {
+                        if (ActiveSeatID >= 0) {
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
                             startActivity(Intent(applicationContext, RestaurantActivity::class.java))
@@ -64,14 +57,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemChart -> {
                         drawerLayout.closeDrawers()
-                        if(ActiveOrderID == null || ActiveOrderID == 0){
-                            Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
-                        }
-                        else{
+                        if(ActiveOrderID >= 0){
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
                             Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
                         }
+                        else Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
                     }
                     R.id.itemStatus -> {
                         drawerLayout.closeDrawers()
@@ -91,14 +82,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-
         /** Button scan clicked -> Start scanner activity */
         binding.btnScan.setOnClickListener {
             val intent = Intent(applicationContext, ScannerSubActivity::class.java)
             resultLauncher.launch(intent)
         }
-
     }
 
     override fun onStart() {
@@ -106,6 +94,7 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = this@MainActivity.getPreferences(Context.MODE_PRIVATE)
         globals.loadPreferences()
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true
@@ -115,7 +104,6 @@ class MainActivity : AppCompatActivity() {
 
     /** Get result from Scanner activity and launch restaurant activity**/
     private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val seatID: String? = data?.getStringExtra("barcode")
@@ -130,5 +118,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "QR-Scanning Canceled", Toast.LENGTH_SHORT).show()
         }
     }
-
 }

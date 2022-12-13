@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 
 class Globals : Application() {
     companion object {
-        var ActiveSeatID : Int = 0
-        var ActiveOrderID : Int = 0
+        var ActiveSeatID : Int = -1
+        var ActiveOrderID : Int = -1
         var TrackedOrderIDs : MutableList<Int> = ArrayList()
         var PaymentOK : Boolean = false
         lateinit var sharedPreferences: SharedPreferences
@@ -14,8 +14,8 @@ class Globals : Application() {
     // Save active seat and order to preferences in phone memory
     fun savePreferences(){
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        ActiveSeatID?.let { editor.putInt("seat", it) }
-        ActiveOrderID?.let { editor.putInt("order", it) }
+        ActiveSeatID.let { editor.putInt("seat", it) }
+        ActiveOrderID.let { editor.putInt("order", it) }
         editor.putInt("orders", TrackedOrderIDs.size)
         var count = 0
         for(orderID in TrackedOrderIDs){
@@ -30,8 +30,8 @@ class Globals : Application() {
     // Load active seat and order from preferences in phone memory
     fun loadPreferences(){
         try {
-            ActiveSeatID = sharedPreferences.getInt("seat", 0)
-            ActiveOrderID = sharedPreferences.getInt("order", 0)
+            ActiveSeatID = sharedPreferences.getInt("seat", -1)
+            ActiveOrderID = sharedPreferences.getInt("order", -1)
             val orders = sharedPreferences.getInt("orders", 0)
             for (i in 1..orders) {
                 val key = "order$i"

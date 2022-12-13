@@ -82,6 +82,28 @@ class DatabaseAccess {
         return Restaurant(id, name, address, description, pictureUrl, typeID)
     }
 
+    fun getWaiter(connection: Connection, waiterID: Int): Waiter {
+        val query = connection.prepareStatement(
+            "SELECT * FROM waiter WHERE id_waiter=$waiterID"
+        )
+        var id: Int = -1
+        var fName: String? = null
+        var lName: String? = null
+        var description: String? = null
+        var pictureUrl: String? = null
+        var restaurantID: Int = -1
+        val result = query.executeQuery()
+        while(result.next()) {
+            id = result.getInt("id_restaurant")
+            fName = result.getString("first_name")
+            lName = result.getString("last_name")
+            description = result.getString("waiter_description")
+            pictureUrl = result.getString("picture_url")
+            restaurantID = result.getInt("id_restaurant")
+        }
+        return Waiter(id, fName, lName, description, pictureUrl, restaurantID)
+    }
+
     fun getRestaurantBySeating(connection: Connection, seatingID: Int): Restaurant?{
         val query = "SELECT id_restaurant FROM seating WHERE id_seating=$seatingID"
         val result = connection.prepareStatement(query).executeQuery()
@@ -153,8 +175,8 @@ class DatabaseAccess {
         return items
     }
 
-    fun createOrder(connection: Connection, restaurantID: Int, seatingID: Int): Int?{
-        var orderID: Int? = null
+    fun createOrder(connection: Connection, restaurantID: Int, seatingID: Int): Int{
+        var orderID: Int = -1
         val query = "INSERT INTO orders(id_restaurant,id_seating) VALUES($restaurantID,$seatingID)" +
                 " RETURNING id_order"
         val result = connection.prepareStatement(query).executeQuery()
@@ -331,7 +353,9 @@ class DatabaseAccess {
             val rejectReason = result.getString("reject_reason")
             val expectedDelivery = result.getLong ("expected_delivery")
             val waiter = result.getInt("id_waiter")
-            order = Order(orderID, price, placed, fulfilled, accepted, rejected, rejectReason, refund, refundReason, expectedDelivery, -1, -1, waiter)
+            val restaurant = result.getInt("id_restaurant")
+            val seating = result.getInt("id_seating")
+            order = Order(orderID, price, placed, fulfilled, accepted, rejected, rejectReason, refund, refundReason, expectedDelivery, restaurant, seating, waiter)
         }
         return order
     }

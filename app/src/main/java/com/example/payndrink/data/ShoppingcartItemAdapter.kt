@@ -38,13 +38,13 @@ class ShoppingcartItemAdapter (
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var rec : Boolean = false
         holder.tvName.text = shoppingcartItemList[position].itemName
-        var price: Double? = shoppingcartItemList[position].itemQty?.let {
+        var price: Double? = shoppingcartItemList[position].itemQty.let {
             shoppingcartItemList[position].itemPrice?.times(it)
         }
         holder.tvPrice.text = String.format("%.2f %s", price, "€")
         holder.tvQty.setText(shoppingcartItemList[position].itemQty.toString())
         holder.bPlus.setOnClickListener{
-            if(shoppingcartItemList[position].itemQty!! < MAX_QTY) {
+            if(shoppingcartItemList[position].itemQty < MAX_QTY) {
                 shoppingcartItemList[position].itemQty =
                     shoppingcartItemList[position].itemQty.plus(1)
                 rec = true
@@ -55,7 +55,7 @@ class ShoppingcartItemAdapter (
             }
         }
         holder.bMinus.setOnClickListener{
-            if(shoppingcartItemList[position].itemQty!! > 0) {
+            if(shoppingcartItemList[position].itemQty > 0) {
                 shoppingcartItemList[position].itemQty =
                     shoppingcartItemList[position].itemQty.minus(1)
                 rec = true

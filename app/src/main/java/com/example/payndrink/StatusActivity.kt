@@ -13,9 +13,7 @@ import com.example.payndrink.data.Globals
 import com.example.payndrink.data.Globals.Companion.TrackedOrderIDs
 import com.example.payndrink.data.StatusItem
 import com.example.payndrink.data.StatusItemAdapter
-import com.example.payndrink.database.DatabaseAccess
-import com.example.payndrink.database.Order
-import com.example.payndrink.database.OrderHasItems
+import com.example.payndrink.database.*
 import com.example.payndrink.databinding.ActivityStatusBinding
 import kotlinx.android.synthetic.main.activity_status.*
 import kotlinx.coroutines.*
@@ -29,10 +27,10 @@ class StatusActivity : AppCompatActivity() {
     private lateinit var job: Job
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
-    private var order: Order? = null
+    //private var order: Order? = null
     private var activeOrderIdx: Int = 0
     private lateinit var itemList: List<StatusItem>
-    private lateinit var items: MutableList<OrderHasItems>
+    //private lateinit var items: MutableList<OrderHasItems>
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var adapter: StatusItemAdapter
 
@@ -98,15 +96,20 @@ class StatusActivity : AppCompatActivity() {
     /** Start coroutine for database polling and UI updating */
     private fun updateView() {
         job = scope.launch(Dispatchers.IO) {
+            var restaurant:Restaurant? = null
+            var order: Order?
+            var waiter: Waiter? = null
             while(job.isActive) {
                 //Get data from DB
                 if (connection == null) connection = dbAccess.connectToDatabase()
                 order = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getPlacedOrder(it1, it)}}
                 itemList = emptyList()
-                if (order != null) {
-                    items = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
+                if(order != null) {
+                    val items: MutableList<OrderHasItems> = TrackedOrderIDs[activeOrderIdx].let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it)}}!!
+                    restaurant = order.restaurantID.let { connection?.let { it1 -> dbAccess.getRestaurant(it1, it)}}
+                    if(order.waiterID != null) waiter = order.waiterID.let { connection?.let { it1 -> dbAccess.getWaiter(it1, it!!)}}
                     for(item in items){
-                        val statusItem = StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order!!.rejected!! > 0)
+                        val statusItem = StatusItem(item.itemID, item.itemName, item.quantity, item.refunded, item.delivered, order.rejected!! > 0)
                         if(!itemList.contains(statusItem)) {
                             itemList = itemList + statusItem
                         }
@@ -117,30 +120,38 @@ class StatusActivity : AppCompatActivity() {
                 //Dispatch changes to UI
                 withContext(Dispatchers.Main) {
                     if (order != null) {
-                        if (order!!.fulfilled!! > 0) {
-                            tvOrderStatus.text = getString(R.string.status_delivered)
-                            tvOrderStatus.setTextColor(Color.CYAN)
-                            tvOrderMessage.text = getString(R.string.order_delivered)
-                        }
-                        else if (order!!.rejected!! > 0) {
-                            tvOrderStatus.text = getString(R.string.status_rejected)
+                        val simpleDateFormat = SimpleDateFormat("E d-M-y  H:mm")
+                        tvRestaurant.text = restaurant!!.name
+                        tvOrderPlaced.text = simpleDateFormat.format(order.placed)
+                        tvSeatID.text = "(seat id: ${order.seatingID.toString()})"
+                        tvPrice.text = String.format("Paid: %.2f%s", order.price, "€")
+                        if (order.rejected!! > 0) {
+                            val simpleDateFormat = SimpleDateFormat("H:mm")
+                            val timeString = simpleDateFormat.format(order.rejected)
+                            tvOrderStatus.text = getString(R.string.status_rejected) + " at $timeString!"
                             tvOrderStatus.setTextColor(Color.RED)
-                            tvOrderMessage.text = order!!.rejectReason
+                            tvOrderMessage.text = order.rejectReason
                         }
-                        else if (order!!.refund!! > 0) {
+                        else if (order.refund!! > 0) {
+                            tvPrice.text = tvPrice.text.toString() + String.format(" / Refunded: %.2f%s", order.refund, "€")
                             tvOrderStatus.text = getString(R.string.status_refunded)
                             tvOrderStatus.setTextColor(Color.MAGENTA)
-                            tvOrderMessage.text = String.format("%s %s",
-                                "Restaurant refunded some of order!", order!!.refundReason)
+                            tvOrderMessage.text = String.format("%s %s", "Restaurant refunded some item: ", order.refundReason)
                         }
-                        else if (order!!.accepted!! > 0) {
-                            tvOrderStatus.text = getString(R.string.status_accepted)
-                            tvOrderStatus.setTextColor(Color.GREEN)
+                        else if (order.fulfilled!! > 0) {
                             val simpleDateFormat = SimpleDateFormat("H:mm")
-                            val timeString = simpleDateFormat.format(order!!.exceptedDelivery)
-                            tvOrderMessage.text = String.format("%s %s",
-                                "Waiter accepted order. Please wait (estimated delivery time:",
-                                timeString)
+                            val timeString = simpleDateFormat.format(order.fulfilled)
+                            tvOrderStatus.text = getString(R.string.status_delivered) + " at $timeString"
+                            tvOrderStatus.setTextColor(Color.parseColor("#008000"))
+                            tvOrderMessage.text = getString(R.string.order_delivered)
+                        }
+                        else if (order.accepted!! > 0) {
+                            tvOrderStatus.text = getString(R.string.status_accepted)
+                            tvOrderStatus.setTextColor(Color.parseColor("#00F50C"))
+                            val simpleDateFormat = SimpleDateFormat("H:mm")
+                            val timeString = simpleDateFormat.format(order.exceptedDelivery)
+                            var waiterName: String = waiter!!.firstName!!
+                            tvOrderMessage.text = "Waiter $waiterName accepted your order. Please wait (estimated delivery time: $timeString)"
                         }
                         else{
                             tvOrderStatus.text = getString(R.string.status_waiting)
