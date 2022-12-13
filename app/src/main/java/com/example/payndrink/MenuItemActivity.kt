@@ -11,6 +11,9 @@ import com.example.payndrink.data.Utilities
 import com.example.payndrink.databinding.ActivityMenuItemBinding
 import kotlinx.android.synthetic.main.activity_menu_item.*
 
+const val MAX_QTY : Int = 100
+const val STATUS_POLLING_INTERVAL : Long = 5000      //in milliseconds
+
 class MenuItemActivity : AppCompatActivity() {
 
     private var itemID : Int = -1

@@ -20,14 +20,49 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
+    <LinearLayout
+        android:id="@+id/layoutTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+        <TextView
+            android:id="@+id/tvRestaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:textColor="@color/purple_500"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvSeatID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingLeft="8dp"
+            android:textColor="@color/purple_500"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvOrderPlaced"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/layoutTop"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="5dp"
+        android:textColor="@color/purple_500"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/tvOrderStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvOrderPlaced"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingTop="16dp"
-        android:text="General status: Waiting"
+        android:paddingTop="10dp"
         android:textColor="@color/purple"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -39,7 +74,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvOrderStatus"
         app:layout_constraintStart_toStartOf="parent"
         android:paddingTop="10dp"
-        android:text="Waiting for the waiter to accept the order"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -55,6 +89,17 @@
         android:background="@color/cardview_light_background"
         android:orientation="horizontal">
     </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/rv_status_items"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="10dp"
+        android:textColor="@color/green"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDelete"

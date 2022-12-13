@@ -32,20 +32,20 @@ internal class GridRVAdapter (
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var convertView = convertView
+        var vconvertView = convertView
         if(layoutInflater == null){
             layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         }
-        if(convertView == null){
-            convertView = layoutInflater!!.inflate(R.layout.grid_item, null)
+        if(vconvertView == null){
+            vconvertView = layoutInflater!!.inflate(R.layout.grid_item, null)
         }
-        itemIV = convertView!!.findViewById((R.id.icons))
-        itemTV = convertView.findViewById(R.id.name_text_view)
-        priceTV = convertView.findViewById(R.id.tv_price)
+        itemIV = vconvertView!!.findViewById((R.id.icons))
+        itemTV = vconvertView.findViewById(R.id.name_text_view)
+        priceTV = vconvertView.findViewById(R.id.tv_price)
         //itemIV.setImageBitmap(BitmapFactory.decodeStream(URL(itemList[position].itemUrl).openConnection().getInputStream()))
         itemIV.setImageBitmap(itemList[position].image)
         itemTV.text = itemList[position].itemName
         priceTV.text = String.format("%.2f %s", itemList[position].itemPrice, "€")
-        return convertView
+        return vconvertView
     }
 }

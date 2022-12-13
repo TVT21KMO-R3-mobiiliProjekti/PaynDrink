@@ -64,12 +64,12 @@ class ShoppingCartActivity : AppCompatActivity() {
         itemList = ArrayList()
         layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         itemList = emptyList()
-        items = ActiveOrderID?.let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it) } }!!
+        items = ActiveOrderID.let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it) } }!!
         for(item in items){
             val price = connection?.let { dbAccess.getItemPrice(it, item.itemID) }
             itemList = itemList + ShoppingcartItem(item.itemID, item.itemName, item.quantity, price)
         }
-        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
+        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID) }
         bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
         adapter = ShoppingcartItemAdapter(itemList)
         rv_shoppingcart_items.layoutManager = layoutManager
@@ -86,13 +86,13 @@ class ShoppingCartActivity : AppCompatActivity() {
         connection = dbAccess.connectToDatabase()
         // Update quantities (currently no matter if changed)
         for (item in itemList) {
-            if (connection?.let {dbAccess.updateItemInOrder(it, item.itemQty, item.id, ActiveOrderID!!) } == null) {
+            if (connection?.let {dbAccess.updateItemInOrder(it, item.itemQty, item.id, ActiveOrderID) } == null) {
                 Toast.makeText(this@ShoppingCartActivity, "Updating shopping cart failed! Please try again later", Toast.LENGTH_LONG).show()
                 return
             }
         }
         // Update total price to view
-        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID!!) }
+        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID) }
         bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
         Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now up to date", Toast.LENGTH_SHORT).show()
     }
@@ -102,10 +102,10 @@ class ShoppingCartActivity : AppCompatActivity() {
         var ret = 0
         //Delete items (will finally also delete order)
         for (item in itemList) {
-            ret = connection?.let { dbAccess.deleteItemInOrder(it, item.id, ActiveOrderID!!) }!!
+            ret = connection?.let { dbAccess.deleteItemInOrder(it, item.id, ActiveOrderID) }!!
         }
         if (ret < 0) {
-            ActiveOrderID = 0
+            ActiveOrderID = -1
             globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Shopping cart is now empty", Toast.LENGTH_SHORT).show()
         }
@@ -131,12 +131,12 @@ class ShoppingCartActivity : AppCompatActivity() {
     /** Set send order flag to DB, start status activity and finish this one */
     private fun sendOrder(): Boolean {
         val connection = dbAccess.connectToDatabase()
-        val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID!!) }!!
+        val ret : Int = connection?.let {dbAccess.sendOrder(it, ActiveOrderID) }!!
         if (ret >= 0) {
             if(!TrackedOrderIDs.contains(ActiveOrderID)) {
-                TrackedOrderIDs.add(ActiveOrderID!!)
+                TrackedOrderIDs.add(ActiveOrderID)
             }
-            ActiveOrderID = 0
+            ActiveOrderID = -1
             globals.savePreferences()
             Toast.makeText(this@ShoppingCartActivity, "Order sent OK", Toast.LENGTH_SHORT).show()
             // Launch status polling
