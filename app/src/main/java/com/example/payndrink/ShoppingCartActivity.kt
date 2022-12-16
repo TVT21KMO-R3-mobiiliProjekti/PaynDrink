@@ -18,9 +18,11 @@ import com.example.payndrink.data.ShoppingcartItemAdapter
 import com.example.payndrink.database.DatabaseAccess
 import com.example.payndrink.database.OrderHasItems
 import kotlinx.android.synthetic.main.activity_shopping_cart.*
+import kotlinx.coroutines.*
 import java.sql.Connection
 
 class ShoppingCartActivity : AppCompatActivity() {
+    private val scope =  CoroutineScope(newSingleThreadContext("Polling"))
     private val dbAccess = DatabaseAccess()
     private val globals = Globals()
     private var connection: Connection? = null
@@ -36,11 +38,12 @@ class ShoppingCartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_cart)
+        layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         bUpdate = findViewById(R.id.btnUpdate)
         bPay = findViewById(R.id.btnPay)
         bClear = findViewById(R.id.btnClear)
-        updateView()
+
         bUpdate.setOnClickListener{
             updateOrder()
         }
@@ -57,28 +60,45 @@ class ShoppingCartActivity : AppCompatActivity() {
             deleteOrder()
             finish()
         }
+
+        updateView()
+    }
+
+    /** On activity destroy stop the coroutine */
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 
     private fun updateView() {
-        connection = dbAccess.connectToDatabase()
-        itemList = ArrayList()
-        layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        itemList = emptyList()
-        items = ActiveOrderID.let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it) } }!!
-        for(item in items){
-            val price = connection?.let { dbAccess.getItemPrice(it, item.itemID) }
-            itemList = itemList + ShoppingcartItem(item.itemID, item.itemName, item.quantity, price)
-        }
-        totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID) }
-        bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
-        adapter = ShoppingcartItemAdapter(itemList)
-        rv_shoppingcart_items.layoutManager = layoutManager
-        rv_shoppingcart_items.setHasFixedSize(true)
-        rv_shoppingcart_items.adapter = adapter
-        adapter.setOnItemClickListener(object: ShoppingcartItemAdapter.OnItemClickListener{
-            override fun onItemClick(position: Int) {
+        scope.launch(Dispatchers.IO) {
+            connection = dbAccess.connectToDatabase()
+            itemList = ArrayList()
+            itemList = emptyList()
+            items = ActiveOrderID.let { connection?.let { it1 -> dbAccess.getItemsInOrder(it1, it) } }!!
+            for (item in items) {
+                val price = connection?.let { dbAccess.getItemPrice(it, item.itemID) }
+                itemList =
+                    itemList + ShoppingcartItem(item.itemID, item.itemName, item.quantity, price)
             }
-        })
+            totalPrice = connection?.let { dbAccess.getOrderPrice(it, ActiveOrderID) }
+
+            withContext(Dispatchers.Main) {
+                btnUpdate.visibility = Button.VISIBLE
+                btnPay.visibility = Button.VISIBLE
+                btnClear.visibility = Button.VISIBLE
+                bPay.text = String.format("PAY %.2f %s", totalPrice, "€")
+                adapter = ShoppingcartItemAdapter(itemList)
+                rv_shoppingcart_items.layoutManager = layoutManager
+                rv_shoppingcart_items.setHasFixedSize(true)
+                rv_shoppingcart_items.adapter = adapter
+                adapter.setOnItemClickListener(object :
+                    ShoppingcartItemAdapter.OnItemClickListener {
+                    override fun onItemClick(position: Int) {
+                    }
+                })
+            }
+        }
     }
 
     /** Update shopping cart changes to db */

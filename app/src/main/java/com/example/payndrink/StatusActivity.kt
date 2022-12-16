@@ -18,19 +18,15 @@ import com.example.payndrink.databinding.ActivityStatusBinding
 import kotlinx.android.synthetic.main.activity_status.*
 import kotlinx.coroutines.*
 import java.sql.Connection
-import java.util.*
 
 class StatusActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStatusBinding
-    @OptIn(DelicateCoroutinesApi::class)
     private val scope =  CoroutineScope(newSingleThreadContext("Polling"))
     private lateinit var job: Job
     private val dbAccess = DatabaseAccess()
     private var connection: Connection? = null
-    //private var order: Order? = null
     private var activeOrderIdx: Int = 0
     private lateinit var itemList: List<StatusItem>
-    //private lateinit var items: MutableList<OrderHasItems>
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var adapter: StatusItemAdapter
 
@@ -70,7 +66,6 @@ class StatusActivity : AppCompatActivity() {
                 TrackedOrderIDs.removeAt(activeOrderIdx)
                 Globals().savePreferences()
                 if(TrackedOrderIDs.count() == 0) {
-
                     Toast.makeText(this@StatusActivity, "No pending orders! Returning...", Toast.LENGTH_LONG).show()
                     finish()
                 }
@@ -136,18 +131,18 @@ class StatusActivity : AppCompatActivity() {
                             tvPrice.text = tvPrice.text.toString() + String.format(" / Refunded: %.2f%s", order.refund, "€")
                             tvOrderStatus.text = getString(R.string.status_refunded)
                             tvOrderStatus.setTextColor(Color.MAGENTA)
-                            tvOrderMessage.text = String.format("%s %s", "Restaurant refunded some item: ", order.refundReason)
+                            tvOrderMessage.text = String.format("%s %s", "Restaurant refunded item(s): ", order.refundReason)
                         }
                         else if (order.fulfilled!! > 0) {
                             val simpleDateFormat = SimpleDateFormat("H:mm")
                             val timeString = simpleDateFormat.format(order.fulfilled)
                             tvOrderStatus.text = getString(R.string.status_delivered) + " at $timeString"
-                            tvOrderStatus.setTextColor(Color.parseColor("#008000"))
+                            tvOrderStatus.setTextColor(Color.parseColor("#00B000"))
                             tvOrderMessage.text = getString(R.string.order_delivered)
                         }
                         else if (order.accepted!! > 0) {
                             tvOrderStatus.text = getString(R.string.status_accepted)
-                            tvOrderStatus.setTextColor(Color.parseColor("#00F50C"))
+                            tvOrderStatus.setTextColor(Color.parseColor("#00800C"))
                             val simpleDateFormat = SimpleDateFormat("H:mm")
                             val timeString = simpleDateFormat.format(order.exceptedDelivery)
                             var waiterName: String = waiter!!.firstName!!

@@ -16,9 +16,11 @@ import com.example.payndrink.database.Item
 import com.example.payndrink.database.Restaurant
 import com.example.payndrink.databinding.ActivityMenuBinding
 import kotlinx.android.synthetic.main.activity_menu.*
+import kotlinx.coroutines.*
 import java.sql.Connection
 
 class RestaurantActivity : AppCompatActivity() {
+    private val scope =  CoroutineScope(newSingleThreadContext("Polling"))
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var binding: ActivityMenuBinding
     private var totalPrice: Double? = 0.0
@@ -26,7 +28,6 @@ class RestaurantActivity : AppCompatActivity() {
     private val globals = Globals()
     private var connection: Connection? = null
     private var restaurant: Restaurant? = null
-    //private var seatID: Int? = null
     private lateinit var itemGRV: GridView
     private lateinit var itemList: List<GridViewMenuItem>
     private lateinit var items: MutableList<Item>
@@ -38,6 +39,8 @@ class RestaurantActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
         binding.apply {
             toggle = ActionBarDrawerToggle(this@RestaurantActivity, drawerLayout, R.string.open, R.string.closed)
             drawerLayout.addDrawerListener(toggle)
@@ -61,7 +64,6 @@ class RestaurantActivity : AppCompatActivity() {
                         }
                         else{
                             Toast.makeText(this@RestaurantActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
-                            Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
                         }
                     }
@@ -71,10 +73,7 @@ class RestaurantActivity : AppCompatActivity() {
                             Toast.makeText(this@RestaurantActivity, "No pending orders", Toast.LENGTH_SHORT).show()
                         }
                         else {
-                            Toast.makeText(
-                                this@RestaurantActivity,"Please wait a moment...", Toast.LENGTH_LONG
-                            ).show()
-                            Thread.sleep(500)
+                            Toast.makeText(this@RestaurantActivity,"Please wait a moment...", Toast.LENGTH_LONG).show()
                             startActivity(Intent(this@RestaurantActivity, StatusActivity::class.java))
                         }
                     }
@@ -86,21 +85,34 @@ class RestaurantActivity : AppCompatActivity() {
         updateView()
     }
 
-    private fun updateView() {
-        connection = dbAccess.connectToDatabase()
-        itemGRV = binding.myGridView //   findViewById(R.id.my_grid_view)
-        itemList = ArrayList()
-        quickList = ArrayList()
-        layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        restaurant = connection?.let { Globals.ActiveSeatID.let { it1 -> dbAccess.getRestaurantBySeating(it, it1) } }
-        if (restaurant != null) {
-            items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
-        }
-        addRestaurantInfo()
-        addMenuItemsToGrid()
+    /** On activity destroy stop the coroutine */
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 
+    private fun updateView() {
+        scope.launch(Dispatchers.IO) {
+            connection = dbAccess.connectToDatabase()
+            itemGRV = binding.myGridView //   findViewById(R.id.my_grid_view)
+            itemList = ArrayList()
+            quickList = ArrayList()
+
+            restaurant = connection?.let {
+                Globals.ActiveSeatID.let { it1 ->
+                    dbAccess.getRestaurantBySeating(it, it1)
+                }
+            }
+            if (restaurant != null) {
+                items = connection?.let { restaurant!!.id?.let { it1 -> dbAccess.getItems(it, it1) } }!!
+            }
+
+            withContext(Dispatchers.Main) {
+                addRestaurantInfo()
+                addMenuItemsToGrid()
+            }
+        }
+    }
 
     private fun addMenuItemsToGrid() {
         itemList = emptyList()
@@ -140,8 +152,10 @@ class RestaurantActivity : AppCompatActivity() {
     }
 
     private fun addRestaurantInfo(){
-        val restaurantIv: ImageView =  binding.ivRestPic  //findViewById(R.id.iv_rest_pic)
-        val restaurantTv: TextView = binding.tvRestName   //findViewById(R.id.tv_rest_name)
+        tvTitleMenu.visibility = TextView.VISIBLE
+        tvTitleQuick.visibility = TextView.VISIBLE
+        val restaurantIv: ImageView =  binding.ivRestPic
+        val restaurantTv: TextView = binding.tvRestName
         restaurantIv.setImageBitmap(Utilities().getImageBitmapFromURL(restaurant!!.pictureUrl))
         restaurantTv.text = restaurant!!.name
 
