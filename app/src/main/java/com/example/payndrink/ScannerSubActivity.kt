@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 
@@ -43,7 +44,7 @@ class ScannerSubActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onResume() {
         super.onResume()
         scannerView?.setResultHandler(this)
-        //scannerView?.setFormats(listOf(BarcodeFormat.QR_CODE)) // Scan only QR-Codes - TESTAUKSEN AJAKSI OHITETTU
+        scannerView?.setFormats(listOf(BarcodeFormat.QR_CODE))
         scannerView?.startCamera()
     }
 

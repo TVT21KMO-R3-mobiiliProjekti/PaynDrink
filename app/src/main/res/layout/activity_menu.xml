@@ -38,20 +38,21 @@
             android:id="@+id/tv_rest_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="Loading..."
             android:textSize="24sp"
             android:layout_margin="5dp"
             android:textAlignment="center"
             android:textColor="#3700B2"/>
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tvTitleQuick"
             android:layout_width="299dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/rounded"
             android:shadowRadius="@integer/material_motion_duration_medium_1"
             android:text="PIKAVALINNAT"
+            android:visibility="invisible"
             android:textAlignment="center"
             android:textColor="@color/white" />
 
@@ -64,12 +65,13 @@
             android:orientation="horizontal" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/tvTitleMenu"
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/rounded"
             android:text="MENU"
+            android:visibility="invisible"
             android:textAlignment="center"
             android:textColor="@color/white" />
 

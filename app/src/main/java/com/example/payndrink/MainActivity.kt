@@ -48,9 +48,9 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.itemMenu -> {
                         drawerLayout.closeDrawers()
+                        ActiveSeatID=3  //DEMONSTRATION!!!! Muista poistaa!!!
                         if (ActiveSeatID >= 0) {
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
-                            Thread.sleep(500)
                             startActivity(Intent(applicationContext, RestaurantActivity::class.java))
                         }
                         else Toast.makeText(this@MainActivity, "Seat id must be scanned first", Toast.LENGTH_SHORT).show()
@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
                         drawerLayout.closeDrawers()
                         if(ActiveOrderID >= 0){
                             Toast.makeText(this@MainActivity, "Please wait a moment...", Toast.LENGTH_LONG).show()
-                            Thread.sleep(500)
                             startActivity(Intent(applicationContext, ShoppingCartActivity::class.java))
                         }
                         else Toast.makeText(this@MainActivity, "No active order", Toast.LENGTH_SHORT).show()
@@ -70,10 +69,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this@MainActivity, "No pending orders", Toast.LENGTH_SHORT).show()
                         }
                         else {
-                            Toast.makeText(
-                                this@MainActivity,"Please wait a moment...", Toast.LENGTH_LONG
-                            ).show()
-                            Thread.sleep(500)
+                            Toast.makeText(this@MainActivity,"Please wait a moment...", Toast.LENGTH_LONG).show()
                             startActivity(Intent(this@MainActivity, StatusActivity::class.java))
                         }
                     }
