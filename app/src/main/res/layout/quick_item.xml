@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/design_default_color_primary">
+        android:background="#3700B2">
 
         <ImageView
             android:id="@+id/icons_quick"
