@@ -27,12 +27,12 @@
         <ImageView
             android:id="@+id/iv_rest_pic"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="135dp"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:contentDescription="TODO"
             android:padding="4dp"
-            app:srcCompat="@drawable/untitled" />
+            app:srcCompat="@drawable/logo" />
 
         <TextView
             android:id="@+id/tv_rest_name"
